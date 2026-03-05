@@ -143,4 +143,26 @@ router.delete("/:id", verifyToken, async (req, res) => {
   }
 });
 
+// ===== GET BOOKS BY LOCATION =====
+
+router.get("/location/:city", async (req, res) => {
+  try {
+
+    // get city from URL
+    const city = req.params.city;
+
+    // search books where location matches city
+    const books = await Book.find({
+      location: { $regex: city, $options: "i" }, // case-insensitive search
+      isSold: false
+    })
+    .populate("seller", "name email");
+
+    res.json(books);
+
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
 module.exports = router;
