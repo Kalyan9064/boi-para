@@ -32,15 +32,18 @@ router.post("/register", async (req, res) => {
   }
 });
 
-router.get("/profile", verifyToken, (req, res) => {
-  res.json({
-    message: "Protected route accessed",
-    userId: req.userId
-  });
+router.get("/profile", verifyToken, async (req, res) => {
+  try {
+
+    // find user using id from token
+    const user = await User.findById(req.userId).select("-password");
+
+    res.json(user);
+
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
 });
-
-module.exports = router;
-
 
 router.post("/login", async (req, res) => {
   try {
@@ -78,3 +81,5 @@ router.post("/login", async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
+
+module.exports = router;

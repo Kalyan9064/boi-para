@@ -101,6 +101,23 @@ router.get("/search", async (req, res) => {
   }
 });
 
+
+// ===== GET MY BOOKS (SELLER DASHBOARD) =====
+
+router.get("/my-books", verifyToken, async (req, res) => {
+  try {
+
+    // find books where seller is the logged-in user
+    const books = await Book.find({ seller: req.userId })
+      .populate("seller", "name email");
+
+    res.json(books);
+
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
 //single book -------------------------------------------------------------------
 
 router.get("/:id", async (req, res) => {
