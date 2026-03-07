@@ -71,7 +71,7 @@ router.get("/", async (req, res) => {
     const limit = 5;
 
     const books = await Book.find({ isSold: false })
-      .populate("seller", "name email")
+      .populate("seller", "name email phone")
       .skip((page - 1) * limit)
       .limit(limit);
 
@@ -92,7 +92,7 @@ router.get("/search", async (req, res) => {
     const books = await Book.find({
       title: { $regex: q, $options: "i" },
       isSold: false
-    }).populate("seller", "name email");
+    }).populate("seller", "name email phone")
 
     res.json(books);
 
@@ -109,8 +109,7 @@ router.get("/my-books", verifyToken, async (req, res) => {
 
     // find books where seller is the logged-in user
     const books = await Book.find({ seller: req.userId })
-      .populate("seller", "name email");
-
+      .populate("seller", "name email phone")
     res.json(books);
 
   } catch (error) {
@@ -123,7 +122,7 @@ router.get("/my-books", verifyToken, async (req, res) => {
 router.get("/:id", async (req, res) => {
   try {
     const book = await Book.findById(req.params.id)
-        .populate("seller", "name email");
+        .populate("seller", "name email phone")
 
     if (!book) {
       return res.status(404).json({ message: "Book not found" });
@@ -173,8 +172,7 @@ router.get("/location/:city", async (req, res) => {
       location: { $regex: city, $options: "i" }, // case-insensitive search
       isSold: false
     })
-    .populate("seller", "name email");
-
+    .populate("seller", "name email phone")
     res.json(books);
 
   } catch (error) {
