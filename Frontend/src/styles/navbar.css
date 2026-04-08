@@ -1,0 +1,52 @@
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: #F3EFE6;
+  padding: 12px 0;
+  border-bottom: 1px solid #ddd;
+}
+
+.navbar-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  font-weight: bold;
+  font-size: 20px;
+}
+
+.logo a {
+  text-decoration: none;   /* remove underline */
+  color: inherit;          /* remove blue color */
+  font-weight: bold;
+}
+
+.logo a:visited {
+  color: inherit;          /* prevent purple after click */
+}
+
+.logo a:hover {
+  text-decoration: none;
+  color: inherit;
+}
+
+.nav-links {
+  display: flex;
+  gap: 25px;
+  align-items: center;
+}
+
+.nav-links a {
+  text-decoration: none;
+  color: #333;
+}
+
+
+.logout-btn {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}

@@ -1,0 +1,59 @@
+.how-section {
+  background: #f3efe6;
+  padding: 80px 0;
+  text-align: center;
+}
+
+.how-title {
+  font-size: 36px;
+  font-family: serif;
+  margin-bottom: 10px;
+}
+
+.how-title {
+  color: #3d342a;
+  margin-bottom: 50px;
+}
+
+.how-grid {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  flex-wrap: wrap;
+}
+
+.how-card {
+  background: white;
+  padding: 30px;
+  border-radius: 10px;
+  width: 300px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+  transition: 0.3s;
+}
+
+.how-card:hover {
+  transform: translateY(-5px);
+}
+
+.icon-circle {
+  width: 60px;
+  height: 60px;
+  background: #f3efe6;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+  font-size: 24px;
+}
+
+.how-card h4 {
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+
+.how-card p {
+  color: #6a5a4a;
+  font-size: 14px;
+  line-height: 1.6;
+}

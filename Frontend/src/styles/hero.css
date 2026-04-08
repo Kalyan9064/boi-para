@@ -1,0 +1,78 @@
+.hero {
+  height: 90vh;
+  background: url("https://images.unsplash.com/photo-1524995997946-a1c2e315a42f") no-repeat center center/cover;
+  position: relative;
+}
+
+.hero-overlay {
+  height: 100%;
+  width: 100%;
+  background: rgba(30, 20, 10, 0.75);
+  display: flex;
+  align-items: center;
+}
+
+.hero-content {
+  color: white;
+  max-width: 650px;
+  margin-left: 80px;   /* 🔥 IMPORTANT (left spacing like Figma) */
+}
+
+.hero-content h1 {
+  font-size: 64px;
+  font-family: serif;
+  margin-bottom: 20px;
+  line-height: 1.2;
+}
+
+.highlight {
+  color: #d4a24c;
+}
+
+.hero-content p {
+  color: #ddd;
+  margin-bottom: 30px;
+  line-height: 1.7;
+  font-size: 16px;
+}
+
+.hero-buttons {
+  display: flex;
+  gap: 20px;
+}
+
+/* PRIMARY BUTTON */
+.btn-primary {
+  background: #8B5A2B;
+  color: white;
+  padding: 12px 25px;
+  border: none;
+  font-weight: 500;
+  transition: 0.3s;
+}
+
+.btn-primary {
+  text-decoration: none;   /* ❌ remove underline */
+}
+
+.btn-outline {
+  text-decoration: none;   /* (for safety if used) */
+}
+
+.btn-primary:hover {
+  background: #6a4420;
+}
+
+/* OUTLINE BUTTON */
+.btn-outline {
+  border: 1px solid white;
+  color: white;
+  padding: 12px 25px;
+  background: transparent;
+  transition: 0.3s;
+}
+
+.btn-outline:hover {
+  background: white;
+  color: black;
+}

@@ -1,0 +1,86 @@
+.book-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.book-card {
+  background: #f9f6f1; /* soft beige */
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #e5dfd6;
+  transition: 0.3s;
+}
+
+.book-card:hover {
+  transform: translateY(-5px);
+}
+
+/* IMAGE */
+.image-wrapper {
+  position: relative;
+}
+
+.book-image {
+  width: 100%;
+  height: 240px;
+  object-fit: cover;
+}
+
+/* PRICE BADGE */
+.price-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: #3b3b3b;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+}
+
+/* BODY */
+.book-body {
+  padding: 18px;
+}
+
+/* TITLE */
+.title a {
+  text-decoration: none;
+  color: #2c1e16;
+  font-family: serif;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+/* AUTHOR */
+.author {
+  color: #8b5a2b;
+  font-size: 14px;
+  margin-top: 5px;
+  margin-bottom: 15px;
+}
+
+/* TAGS */
+.tags {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 15px;
+}
+
+.tag {
+  border: 1px solid #e0d8cc;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  color: #6a5a4a;
+  background: #f3efe6;
+}
+
+/* BOTTOM ROW */
+.bottom-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: #7a6a58;
+}

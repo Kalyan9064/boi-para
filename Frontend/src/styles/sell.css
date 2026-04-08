@@ -1,0 +1,78 @@
+.sell-container {
+  max-width: 800px;
+  margin: auto;
+  padding: 40px 20px;
+}
+
+.sell-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 40px;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.sell-subtitle {
+  text-align: center;
+  color: #7a6a58;
+  margin-bottom: 30px;
+}
+
+.sell-card {
+  border: 1px solid #e5dfd6;
+  border-radius: 10px;
+  padding: 30px;
+  background: #f9f6f1;
+}
+
+/* PHOTO */
+.photo-box {
+  border: 2px dashed #d8d0c5;
+  padding: 40px;
+  text-align: center;
+  border-radius: 10px;
+  margin-bottom: 30px;
+}
+
+.photo-box p {
+  color: #7a6a58;
+  margin-bottom: 10px;
+}
+
+/* SECTION */
+.section-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 22px;
+  margin-bottom: 15px;
+}
+
+/* INPUTS */
+.form-control {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+}
+
+/* BUTTON */
+.post-btn {
+  background: #8b5a2b;
+  color: white;
+  padding: 12px;
+  width: 100%;
+  border: none;
+  border-radius: 6px;
+  margin-top: 20px;
+  cursor: pointer;
+}
+
+.post-btn:hover {
+  background: #6a4420;
+}
+
+.input-label {
+  font-size: 14px;
+  color: #5a4a3a;
+  margin-bottom: 5px;
+  display: block;
+}

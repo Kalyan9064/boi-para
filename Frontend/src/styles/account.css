@@ -1,0 +1,49 @@
+.account-container {
+  max-width: 800px;
+  margin: auto;
+  padding: 40px 20px;
+}
+
+.account-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 36px;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.account-card {
+  background: #f9f6f1;
+  border: 1px solid #e5dfd6;
+  border-radius: 12px;
+  padding: 30px;
+}
+
+/* PROFILE */
+.profile-section {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.profile-img {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 10px;
+  border: 3px solid #8b5a2b;
+}
+
+/* INFO */
+.info-row {
+  margin-bottom: 15px;
+}
+
+.info-row label {
+  font-size: 14px;
+  color: #7a6a58;
+}
+
+.info-row p {
+  font-size: 18px;
+  font-weight: 500;
+}
