@@ -1,9 +1,14 @@
 import { Link } from "react-router-dom";
+import API from "../api/api";
 import "../styles/bookcard.css";
+import { useState, useEffect } from "react";
 
 function BookCard({ book }) {
 
-   const getTimeAgo = (date) => {
+  // ==============================
+  // 🕒 TIME FUNCTION
+  // ==============================
+  const getTimeAgo = (date) => {
     const now = new Date();
     const past = new Date(date);
 
@@ -20,51 +25,134 @@ function BookCard({ book }) {
     return "Just now";
   };
 
+  // ==============================
+  // ❤️ STATE
+  // ==============================
+  const [isSaved, setIsSaved] = useState(false);
+
+  // ==============================
+  // 🔍 CHECK IF SAVED
+  // ==============================
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    if (!token) return;
+
+    API.get("/api/auth/wishlist", {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
+      .then(res => {
+        const exists = res.data.some(
+          item => item._id === book._id
+        );
+        setIsSaved(exists);
+      })
+      .catch(() => {});
+  }, [book._id]);
+
+  // ==============================
+  // ❤️ TOGGLE WISHLIST
+  // ==============================
+  const handleWishlist = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    try {
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        alert("Please login first");
+        return;
+      }
+
+      if (isSaved) {
+        // REMOVE
+        await API.delete(`/api/auth/wishlist/${book._id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+
+        setIsSaved(false);
+
+      } else {
+        // ADD
+        await API.post(
+          `/api/auth/wishlist/${book._id}`,
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          }
+        );
+
+        setIsSaved(true);
+      }
+
+    } catch (err) {
+      alert("Error updating wishlist");
+    }
+  };
+
   return (
-    <div className="col-md-3 mb-4"> {/* 4 cards per row */}
-    
-     <Link to={`/book/${book._id}`} className="book-link">
-      <div className="book-card">
+    <div className="col-md-3 mb-4">
 
-        {/* IMAGE + PRICE BADGE */}
-        
-        <div className="image-wrapper">
-          <img
-            src={`http://localhost:5000/uploads/${book.image}`}
-            alt="book"
-            className="book-image"
-          />
+      <Link to={`/book/${book._id}`} className="book-link">
 
-          <div className="price-badge">
-            ₹{book.price}
+        <div className="book-card">
+
+          {/* ================= IMAGE ================= */}
+          <div className="image-wrapper">
+
+            <img
+              src={`http://localhost:5000/uploads/${book.image}`}
+              alt="book"
+              className="book-image"
+            />
+
+            {/* 💰 PRICE */}
+            <div className="price-badge">
+              ₹{book.price}
+            </div>
+
+            {/* ❤️ TOGGLE BUTTON */}
+            <button
+              onClick={handleWishlist}
+              className="wishlist-btn"
+            >
+              {isSaved ? "❤️" : "🤍"}
+            </button>
+
           </div>
-        </div>
 
-        <div className="book-body">
+          {/* ================= BODY ================= */}
+          <div className="book-body">
 
-          <h6 className="title">
+            <h6 className="title">
               {book.title}
-          </h6>
+            </h6>
 
-          <p className="author">{book.author}</p>
+            <p className="author">{book.author}</p>
 
-          {/* TAGS (temporary static) */}
-          <div className="tags">
-            <span className="tag">{book.condition}</span>
-            <span className="tag">{book.category}</span>
-          </div>
+            {/* TAGS */}
+            <div className="tags">
+              <span className="tag">{book.condition}</span>
+              <span className="tag">{book.category}</span>
+            </div>
 
-          {/* LOCATION + TIME */}
-          <div className="bottom-row">
-            <span>📍 {book.location}</span>
-            {/* <span>⏱ {getTimeAgo(book.createdAt)}</span> */}
-             {/* <span>📍 {new Date(book.createdAt).toLocaleDateString()}</span> */}
-            <span>⏱ {getTimeAgo(book.createdAt)}</span>
+            {/* LOCATION + TIME */}
+            <div className="bottom-row">
+              <span>📍 {book.location}</span>
+              <span>⏱ {getTimeAgo(book.createdAt)}</span>
+            </div>
+
           </div>
 
         </div>
 
-      </div>
       </Link>
 
     </div>

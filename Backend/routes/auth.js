@@ -4,6 +4,8 @@ const User = require("../models/User");
 const jwt = require("jsonwebtoken");
 const verifyToken = require("../middleware/authMiddleware");
 const multer = require("multer");
+const crypto = require("crypto");
+const sendVerificationEmail = require("../utils/sendEmail");
 
 const router = express.Router();
 
@@ -31,25 +33,78 @@ router.post("/register", async (req, res) => {
     const { name, email, password, phone } = req.body;
 
     const existingUser = await User.findOne({ email });
+
     if (existingUser) {
-      return res.status(400).json({ message: "User already exists" });
+      return res.status(400).json({
+        message: "User already exists"
+      });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
+
+    const verificationToken =
+      crypto.randomBytes(32).toString("hex");
 
     const newUser = new User({
       name,
       email,
       password: hashedPassword,
-      phone
+      phone,
+      verificationToken
     });
 
     await newUser.save();
 
-    res.status(201).json({ message: "User registered successfully" });
+    await sendVerificationEmail(
+      email,
+      verificationToken
+    );
+
+    res.status(201).json({
+      message:
+        "Registered successfully. Please verify your email."
+    });
 
   } catch (error) {
-    res.status(500).json({ message: "Server error" });
+    console.log(error);
+    res.status(500).json({
+      message: "Server error"
+    });
+  }
+});
+
+
+// ==============================
+// 📧 VERIFY EMAIL
+// ==============================
+router.get("/verify-email/:token", async (req, res) => {
+  try {
+    const user = await User.findOne({
+      verificationToken: req.params.token
+    });
+
+    if (!user) {
+      return res.status(400).send("Invalid verification token");
+    }
+
+    user.isVerified = true;
+    user.verificationToken = null;
+
+    await user.save();
+
+    const token = jwt.sign(
+      { id: user._id },
+      process.env.JWT_SECRET,
+      { expiresIn: "1d" }
+    );
+
+    res.json({
+      message: "Email verified successfully",
+      token
+    });
+
+  } catch (error) {
+    res.status(500).send("Server error");
   }
 });
 
@@ -64,13 +119,27 @@ router.post("/login", async (req, res) => {
     const user = await User.findOne({ email });
 
     if (!user) {
-      return res.status(400).json({ message: "User not found" });
+      return res.status(400).json({
+        message: "User not found"
+      });
     }
 
-    const isMatch = await bcrypt.compare(password, user.password);
+    if (!user.isVerified) {
+      return res.status(400).json({
+        message:
+          "Please verify your email before login"
+      });
+    }
+
+    const isMatch = await bcrypt.compare(
+      password,
+      user.password
+    );
 
     if (!isMatch) {
-      return res.status(400).json({ message: "Invalid credentials" });
+      return res.status(400).json({
+        message: "Invalid credentials"
+      });
     }
 
     const token = jwt.sign(
@@ -85,7 +154,9 @@ router.post("/login", async (req, res) => {
     });
 
   } catch (error) {
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({
+      message: "Server error"
+    });
   }
 });
 
@@ -95,13 +166,15 @@ router.post("/login", async (req, res) => {
 // ==============================
 router.get("/profile", verifyToken, async (req, res) => {
   try {
-
-    const user = await User.findById(req.userId).select("-password");
+    const user = await User.findById(req.userId)
+      .select("-password");
 
     res.json(user);
 
   } catch (error) {
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({
+      message: "Server error"
+    });
   }
 });
 
@@ -115,14 +188,14 @@ router.post(
   upload.single("image"),
   async (req, res) => {
     try {
-
       const user = await User.findById(req.userId);
 
       if (!user) {
-        return res.status(404).json({ message: "User not found" });
+        return res.status(404).json({
+          message: "User not found"
+        });
       }
 
-      // save image filename
       user.profileImage = req.file.filename;
 
       await user.save();
@@ -133,9 +206,69 @@ router.post(
       });
 
     } catch (error) {
-      res.status(500).json({ message: "Server error" });
+      res.status(500).json({
+        message: "Server error"
+      });
     }
   }
 );
+
+
+// ==============================
+// ❤️ ADD TO WISHLIST
+// ==============================
+router.post("/wishlist/:bookId", verifyToken, async (req, res) => {
+  try {
+    const user = await User.findById(req.userId);
+
+    if (!user.savedBooks.includes(req.params.bookId)) {
+      user.savedBooks.push(req.params.bookId);
+      await user.save();
+    }
+
+    res.json({ message: "Added to wishlist" });
+
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+
+// ==============================
+// 💔 REMOVE FROM WISHLIST
+// ==============================
+router.delete("/wishlist/:bookId", verifyToken, async (req, res) => {
+  try {
+    const user = await User.findById(req.userId);
+
+    user.savedBooks = user.savedBooks.filter(
+      id => id.toString() !== req.params.bookId
+    );
+
+    await user.save();
+
+    res.json({ message: "Removed from wishlist" });
+
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+
+// ==============================
+// 📄 GET WISHLIST
+// ==============================
+router.get("/wishlist", verifyToken, async (req, res) => {
+  try {
+    const user = await User.findById(req.userId)
+      .populate("savedBooks");
+
+    res.json(user.savedBooks);
+
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
 
 module.exports = router;

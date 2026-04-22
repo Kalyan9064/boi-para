@@ -8,7 +8,7 @@ const bookSchema = new mongoose.Schema({
   condition: String,
   description: String,
   location: String,
-  image: String, // NEW: store uploaded image filename
+  image: String,
 
   seller: {
     type: mongoose.Schema.Types.ObjectId,

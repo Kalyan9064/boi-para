@@ -1,34 +1,57 @@
-import React from "react";
+import React, { useState } from "react";
 import "../styles/navbar.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 function Navbar() {
   const token = localStorage.getItem("token");
+  const [search, setSearch] = useState("");
+  const navigate = useNavigate();
 
+  // LOGOUT
   const handleLogout = () => {
     localStorage.removeItem("token");
     window.location.href = "/";
   };
 
+  // SEARCH
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (!search.trim()) return;
+
+    navigate(`/search?q=${search}`);
+  };
+
   return (
     <nav className="navbar">
       <div className="container navbar-container">
+
         {/* LEFT */}
         <div className="logo">
-          {/* 📚 Boi-Para */}
-          <Link to="/">📚 Boi-Para</Link>
+          <Link to="/#hero">📚 Boi-Para</Link>
         </div>
 
         {/* RIGHT */}
         <div className="nav-links">
+
+          {/* 🔍 SEARCH (LEFT OF BROWSE) */}
+          <form onSubmit={handleSearch} className="search-box small-search">
+            <span className="search-icon">🔍</span>
+
+            <input
+              type="text"
+              placeholder="Search..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </form>
+
+          {/* BROWSE */}
           <Link to="/browse">Browse Books</Link>
 
           {token && (
             <span
-              style={{ cursor: "pointer", margin: "0 10px" }}
+              className="sell-link"
               onClick={() => {
-                const token = localStorage.getItem("token");
-
                 if (token) {
                   window.location.href = "/sell-book";
                 } else {
@@ -41,12 +64,11 @@ function Navbar() {
             </span>
           )}
 
-          <Link>Messages</Link>
+          <Link to="/wishlist">Wishlist ❤️</Link>
 
           {token ? (
             <>
               <Link to="/account">My Account</Link>
-
               <button onClick={handleLogout} className="logout-btn">
                 Logout
               </button>
@@ -54,7 +76,9 @@ function Navbar() {
           ) : (
             <Link to="/login">Login</Link>
           )}
+
         </div>
+
       </div>
     </nav>
   );

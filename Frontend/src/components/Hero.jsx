@@ -17,7 +17,7 @@ function Hero() {
   };
 
   return (
-    <div className="hero">
+    <div id="hero" className="hero">
       <div className="hero-overlay">
         <div className="container hero-content">
 

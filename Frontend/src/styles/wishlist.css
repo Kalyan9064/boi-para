@@ -1,0 +1,80 @@
+/* Container */
+.wishlist-container {
+  padding: 20px;
+}
+
+/* Title */
+.wishlist-title {
+  margin-bottom: 20px;
+}
+
+/* Grid layout */
+.wishlist-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+/* Card */
+.wishlist-card {
+  position: relative;
+  border: 1px solid #ddd;
+  padding: 10px;
+  border-radius: 10px;
+  background: #fff;
+  transition: 0.2s ease;
+}
+
+.wishlist-card:hover {
+  transform: translateY(-5px);
+}
+
+/* Image */
+.wishlist-img {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+}
+
+/* Remove button */
+.remove-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+
+  width: 32px;
+  height: 32px;
+
+  border-radius: 50%;
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 16px;
+
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  transition: 0.2s ease;
+}
+
+/* Hover effect */
+.remove-btn:hover {
+  background: #fee2e2;
+  transform: scale(1.1);
+}
+
+/* Link style */
+.book-link {
+  text-decoration: none;
+  color: black;
+}
+
+/* Empty state */
+.empty {
+  text-align: center;
+  margin-top: 50px;
+}

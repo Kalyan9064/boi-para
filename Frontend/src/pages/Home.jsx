@@ -20,11 +20,11 @@ function Home() {
   useEffect(() => {
     setLoading(true);
 
-    API.get(`/api/books?page=${page}`)
-      .then(res => {
-        setBooks(res.data);
-        setLoading(false);
-      })
+   API.get(`/api/books?page=${page}`)
+  .then(res => {
+    setBooks(res.data);
+    setLoading(false);
+  })
       .catch(err => {
         console.log("ERROR:", err);
         setLoading(false);

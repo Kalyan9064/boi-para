@@ -1,31 +1,36 @@
+/* ================= NAVBAR ================= */
 .navbar {
   position: sticky;
   top: 0;
   z-index: 100;
+
   background: #F3EFE6;
   padding: 12px 0;
+
   border-bottom: 1px solid #ddd;
 }
 
+/* ================= CONTAINER ================= */
 .navbar-container {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
+/* ================= LOGO ================= */
 .logo {
   font-weight: bold;
   font-size: 20px;
 }
 
 .logo a {
-  text-decoration: none;   /* remove underline */
-  color: inherit;          /* remove blue color */
+  text-decoration: none;
+  color: inherit;
   font-weight: bold;
 }
 
 .logo a:visited {
-  color: inherit;          /* prevent purple after click */
+  color: inherit;
 }
 
 .logo a:hover {
@@ -33,6 +38,46 @@
   color: inherit;
 }
 
+/* ================= SEARCH BOX ================= */
+.search-box {
+  position: relative;
+  width: 170px;
+}
+
+/* INPUT */
+.search-box input {
+  width: 100%;
+  padding: 10px 12px 10px 38px;
+
+  border-radius: 25px;
+  border: 1px solid #ccc;
+
+  outline: none;
+  font-size: 14px;
+
+  background: #fff;
+
+  transition: all 0.2s ease;
+}
+
+/* FOCUS EFFECT */
+.search-box input:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 6px rgba(99, 102, 241, 0.3);
+}
+
+/* ICON */
+.search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+
+  font-size: 14px;
+  color: #777;
+}
+
+/* ================= NAV LINKS ================= */
 .nav-links {
   display: flex;
   gap: 25px;
@@ -42,11 +87,29 @@
 .nav-links a {
   text-decoration: none;
   color: #333;
+  font-size: 14px;
+  transition: 0.2s ease;
 }
 
+.nav-links a:hover {
+  color: #000;
+}
 
+/* ================= SELL LINK ================= */
+.sell-link {
+  cursor: pointer;
+  font-size: 14px;
+}
+
+/* ================= LOGOUT ================= */
 .logout-btn {
   border: none;
   background: transparent;
   cursor: pointer;
+  font-size: 14px;
+  color: #333;
+}
+
+.logout-btn:hover {
+  color: #000;
 }

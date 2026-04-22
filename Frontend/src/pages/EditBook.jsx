@@ -34,17 +34,29 @@ function EditBook() {
 
   // update book
   const handleSubmit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    try {
-      await API.put(`/api/books/${id}`, form);
-      alert("Book updated successfully");
-      navigate("/account");
-    } catch (err) {
-      console.log(err);
-      alert("Error updating book");
-    }
-  };
+  try {
+    const token = localStorage.getItem("token");
+
+    await API.put(
+      `/api/books/${id}`,
+      form,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+
+    alert("Book updated successfully");
+    navigate("/account");
+
+  } catch (err) {
+    console.log(err.response?.data || err.message);
+    alert("Error updating book");
+  }
+};
 
   return (
     <div className="container mt-4">
