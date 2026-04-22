@@ -47,7 +47,7 @@ function BookDetail() {
         <div className="col-md-6">
           <div className="image-box">
             <img
-              src={`http://localhost:5000/uploads/${book.image}`}
+              src={`${import.meta.env.VITE_API_URL}/uploads/${book.image}`}
               alt="book"
             />
           </div>
@@ -139,7 +139,7 @@ function BookDetail() {
                   onClick={() => navigate(`/book/${item._id}`)}
                 >
                   <img
-                    src={`http://localhost:5000/uploads/${item.image}`}
+                    src={`${import.meta.env.VITE_API_URL}/uploads/${item.image}`}
                     alt="book"
                     style={{ height: "150px", objectFit: "cover" }}
                   />

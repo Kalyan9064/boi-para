@@ -76,7 +76,7 @@ function Wishlist() {
             <Link to={`/book/${book._id}`} className="book-link">
 
               <img
-                src={`http://localhost:5000/uploads/${book.image}`}
+                src={`${import.meta.env.VITE_API_URL}/uploads/${book.image}`}
                 alt="book"
                 className="wishlist-img"
               />

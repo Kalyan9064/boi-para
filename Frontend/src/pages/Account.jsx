@@ -114,7 +114,7 @@ function Account() {
               image
                 ? URL.createObjectURL(image)
                 : user?.profileImage
-                  ? `http://localhost:5000/uploads/${user.profileImage}`
+                  ? `${import.meta.env.VITE_API_URL}/uploads/${user.profileImage}`
                   : "https://via.placeholder.com/120"
             }
             alt="profile"
@@ -157,7 +157,7 @@ function Account() {
                 <div className="card h-100">
 
                   <img
-                    src={`http://localhost:5000/uploads/${book.image}`}
+                    src={`${import.meta.env.VITE_API_URL}/uploads/${book.image}`}
                     className="card-img-top"
                     alt="book"
                     style={{ height: "200px", objectFit: "cover" }}
