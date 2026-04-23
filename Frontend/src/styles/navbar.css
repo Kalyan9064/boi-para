@@ -15,6 +15,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;   /* 🔥 important for mobile */
 }
 
 /* ================= LOGO ================= */
@@ -29,19 +30,10 @@
   font-weight: bold;
 }
 
-.logo a:visited {
-  color: inherit;
-}
-
-.logo a:hover {
-  text-decoration: none;
-  color: inherit;
-}
-
 /* ================= SEARCH BOX ================= */
 .search-box {
   position: relative;
-  width: 170px;
+  width: 220px;
 }
 
 /* INPUT */
@@ -54,13 +46,11 @@
 
   outline: none;
   font-size: 14px;
-
   background: #fff;
 
   transition: all 0.2s ease;
 }
 
-/* FOCUS EFFECT */
 .search-box input:focus {
   border-color: #6366f1;
   box-shadow: 0 0 6px rgba(99, 102, 241, 0.3);
@@ -72,7 +62,6 @@
   left: 12px;
   top: 50%;
   transform: translateY(-50%);
-
   font-size: 14px;
   color: #777;
 }
@@ -80,7 +69,7 @@
 /* ================= NAV LINKS ================= */
 .nav-links {
   display: flex;
-  gap: 25px;
+  gap: 20px;
   align-items: center;
 }
 
@@ -95,7 +84,7 @@
   color: #000;
 }
 
-/* ================= SELL LINK ================= */
+/* ================= SELL ================= */
 .sell-link {
   cursor: pointer;
   font-size: 14px;
@@ -112,4 +101,35 @@
 
 .logout-btn:hover {
   color: #000;
+}
+
+/* ================================================= */
+/* 📱 MOBILE RESPONSIVE */
+/* ================================================= */
+
+@media (max-width: 768px) {
+
+  .navbar-container {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  /* 🔍 SEARCH FULL WIDTH */
+  .search-box {
+    width: 100%;
+  }
+
+  /* 📚 NAV LINKS WRAP */
+  .nav-links {
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .nav-links a,
+  .logout-btn,
+  .sell-link {
+    font-size: 13px;
+  }
 }
