@@ -129,3 +129,30 @@
     text-align: center;
   }
 }
+
+@media (max-width: 768px) {
+
+  .footer-main {
+    flex-direction: column;
+    gap: 30px;
+
+    /* 🔥 ADD THESE */
+    align-items: center;
+    text-align: center;
+  }
+
+  .footer-col {
+    max-width: 100%;
+  }
+
+  .footer-col ul {
+    padding: 0;
+  }
+
+  .footer-bottom {
+    flex-direction: column;
+    gap: 10px;
+    text-align: center;
+    align-items: center;
+  }
+}
