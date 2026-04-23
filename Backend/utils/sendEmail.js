@@ -1,7 +1,7 @@
 const nodemailer = require("nodemailer");
 
 const sendVerificationEmail = async (email, token) => {
-  console.log("📧 Sending email to:", email);
+  console.log("📧 STEP 1: Function called");
 
   try {
     const transporter = nodemailer.createTransport({
@@ -12,46 +12,30 @@ const sendVerificationEmail = async (email, token) => {
       }
     });
 
-    // 🔗 Verification link (production)
+    console.log("📧 STEP 2: Transport created");
+    console.log("EMAIL_USER:", process.env.EMAIL_USER);
+    console.log("EMAIL_PASS exists:", !!process.env.EMAIL_PASS);
+
     const verificationLink =
       `${process.env.CLIENT_URL}/verify-email/${token}`;
 
-    console.log("🔗 Verification link:", verificationLink);
+    console.log("🔗 STEP 3: Link created:", verificationLink);
 
-    // 🧪 Verify transporter connection (VERY IMPORTANT)
     await transporter.verify();
-    console.log("✅ SMTP server is ready");
+    console.log("✅ STEP 4: SMTP verified");
 
-    // 📤 Send email
     const info = await transporter.sendMail({
       from: `"Boi Para" <${process.env.EMAIL_USER}>`,
       to: email,
       subject: "Verify Your Email",
-      html: `
-        <h2>Email Verification</h2>
-        <p>Click below to verify your account:</p>
-        <a 
-          href="${verificationLink}"
-          style="
-            display:inline-block;
-            padding:12px 24px;
-            background:#16a34a;
-            color:white;
-            text-decoration:none;
-            border-radius:8px;
-            font-weight:bold;
-          "
-        >
-          Click Here to Verify
-        </a>
-      `
+      html: `<p>Verify:</p><a href="${verificationLink}">${verificationLink}</a>`
     });
 
-    console.log("✅ Email sent successfully");
-    console.log("📨 Message ID:", info.messageId);
+    console.log("✅ STEP 5: Email sent");
+    console.log("Message ID:", info.messageId);
 
   } catch (error) {
-    console.log("❌ Email sending failed:");
+    console.log("❌ EMAIL ERROR:");
     console.log(error);
   }
 };
