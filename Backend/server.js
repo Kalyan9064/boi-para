@@ -3,6 +3,14 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 require("dotenv").config();
 
+// ✅ ENV DEBUG - Check if Render is injecting env vars correctly
+console.log("🔍 ENV CHECK ON STARTUP:");
+console.log("EMAIL_USER:", process.env.EMAIL_USER);
+console.log("EMAIL_PASS exists:", !!process.env.EMAIL_PASS);
+console.log("CLIENT_URL:", process.env.CLIENT_URL);
+console.log("MONGO_URI exists:", !!process.env.MONGO_URI);
+console.log("PORT:", process.env.PORT);
+
 const authRoutes = require("./routes/auth");
 const bookRoutes = require("./routes/book");
 
@@ -34,7 +42,7 @@ app.get("/", (req, res) => {
   res.send("Old Book API running");
 });
 
-// Dynamic port (VERY IMPORTANT)
+// Dynamic port
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
