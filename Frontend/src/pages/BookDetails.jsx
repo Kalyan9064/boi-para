@@ -9,6 +9,7 @@ function BookDetail() {
 
   const [book, setBook] = useState(null);
   const [sellerBooks, setSellerBooks] = useState([]);
+  const [selectedImage, setSelectedImage] = useState(0);
 
   // ==============================
   // 📦 FETCH MAIN BOOK
@@ -26,7 +27,6 @@ function BookDetail() {
     if (book?.seller?._id) {
       API.get(`/api/books/seller/${book.seller._id}`)
         .then(res => {
-          // remove current book
           const filtered = res.data.filter(
             b => b._id !== book._id
           );
@@ -43,17 +43,43 @@ function BookDetail() {
 
       <div className="row">
 
-        {/* LEFT IMAGE */}
+        {/* ================= LEFT IMAGE ================= */}
         <div className="col-md-6">
           <div className="image-box">
+
+            {/* MAIN IMAGE */}
             <img
-              src={`${import.meta.env.VITE_API_URL}/uploads/${book.image}`}
+              src={book.images?.[selectedImage] || "/placeholder-book.jpg"}
               alt="book"
+              className="main-image"
+              onError={(e) => {
+                e.target.src = "/placeholder-book.jpg";
+              }}
             />
+
+            {/* THUMBNAILS */}
+            <div style={{ display: "flex", gap: "10px", marginTop: "10px", flexWrap: "wrap" }}>
+              {book.images?.map((img, index) => (
+                <img
+                  key={index}
+                  src={img}
+                  alt="thumb"
+                  onClick={() => setSelectedImage(index)}
+                  style={{
+                    width: "70px",
+                    height: "70px",
+                    objectFit: "cover",
+                    cursor: "pointer",
+                    border: selectedImage === index ? "2px solid blue" : "1px solid #ccc"
+                  }}
+                />
+              ))}
+            </div>
+
           </div>
         </div>
 
-        {/* RIGHT DETAILS */}
+        {/* ================= RIGHT DETAILS ================= */}
         <div className="col-md-6">
 
           <div className="badge-box">
@@ -80,7 +106,7 @@ function BookDetail() {
           <h5>Description</h5>
           <p>{book.description}</p>
 
-          {/* SELLER BOX */}
+          {/* ================= SELLER ================= */}
           <div className="seller-box">
             <h6>Seller Information</h6>
 
@@ -119,12 +145,9 @@ function BookDetail() {
           </div>
 
         </div>
-
       </div>
 
-      {/* ==============================
-          📚 MORE FROM THIS SELLER
-      ============================== */}
+      {/* ================= MORE FROM SELLER ================= */}
       {sellerBooks.length > 0 && (
         <div className="mt-5">
 
@@ -139,9 +162,12 @@ function BookDetail() {
                   onClick={() => navigate(`/book/${item._id}`)}
                 >
                   <img
-                    src={`${import.meta.env.VITE_API_URL}/uploads/${item.image}`}
+                    src={item.images?.[0] || "/placeholder-book.jpg"}
                     alt="book"
                     style={{ height: "150px", objectFit: "cover" }}
+                    onError={(e) => {
+                      e.target.src = "/placeholder-book.jpg";
+                    }}
                   />
 
                   <h6>{item.title}</h6>

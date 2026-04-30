@@ -2,67 +2,36 @@ const express = require("express");
 const router = express.Router();
 const Book = require("../models/Book");
 const verifyToken = require("../middleware/authMiddleware");
-const multer = require("multer");
-
-// ==============================
-// 📦 MULTER CONFIG
-// ==============================
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "uploads/");
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + "-" + file.originalname);
-  }
-});
-
-const upload = multer({ storage });
+const { cloudinary, upload } = require("../config/cloudinary"); // ✅ NEW
 
 // ==============================
 // ➕ ADD BOOK
 // ==============================
-router.post(
-  "/",
-  verifyToken,
-  upload.single("image"),
-  async (req, res) => {
-    try {
-      const {
-        title,
-        author,
-        price,
-        category,
-        condition,
-        description,
-        location
-      } = req.body;
+router.post("/", verifyToken, upload.array("images", 5), async (req, res) => {
+  try {
+    const { title, author, price, category, condition, description, location } = req.body;
 
-      const newBook = new Book({
-        title,
-        author,
-        price,
-        category,
-        condition,
-        description,
-        location,
-        image: req.file ? req.file.filename : null,
-        seller: req.userId,
-        isSold: false
-      });
+    const newBook = new Book({
+      title,
+      author,
+      price,
+      category,
+      condition,
+      description,
+      location,
+      images: req.files ? req.files.map(f => f.path) : [], // ✅ array of URLs
+      seller: req.userId,
+      isSold: false
+    });
 
-      await newBook.save();
+    await newBook.save();
+    res.status(201).json({ message: "Book added successfully", book: newBook });
 
-      res.status(201).json({
-        message: "Book added successfully",
-        book: newBook
-      });
-
-    } catch (error) {
-      console.log("REAL ERROR:", error);
-      res.status(500).json({ message: error.message });
-    }
+  } catch (error) {
+    console.log("REAL ERROR:", error);
+    res.status(500).json({ message: error.message });
   }
-);
+});
 
 // ==============================
 // 📚 GET ALL BOOKS
@@ -72,24 +41,19 @@ router.get("/", async (req, res) => {
     const books = await Book.find({ isSold: false })
       .populate("seller", "name email phone")
       .sort({ createdAt: -1 });
-
     res.json(books);
-
   } catch (error) {
     res.status(500).json({ message: "Server error" });
   }
 });
 
 // ==============================
-// 🔍 GLOBAL SEARCH (IMPORTANT)
+// 🔍 GLOBAL SEARCH
 // ==============================
 router.get("/search", async (req, res) => {
   try {
     const { q } = req.query;
-
-    if (!q) {
-      return res.json([]);
-    }
+    if (!q) return res.json([]);
 
     const books = await Book.find({
       isSold: false,
@@ -102,7 +66,6 @@ router.get("/search", async (req, res) => {
     }).populate("seller", "name email phone");
 
     res.json(books);
-
   } catch (error) {
     res.status(500).json({ message: "Server error" });
   }
@@ -115,9 +78,7 @@ router.get("/my-books", verifyToken, async (req, res) => {
   try {
     const books = await Book.find({ seller: req.userId })
       .populate("seller", "name email phone");
-
     res.json(books);
-
   } catch (error) {
     res.status(500).json({ message: "Server error" });
   }
@@ -128,15 +89,10 @@ router.get("/my-books", verifyToken, async (req, res) => {
 // ==============================
 router.get("/seller/:sellerId", async (req, res) => {
   try {
-    const books = await Book.find({
-      seller: req.params.sellerId,
-      isSold: false
-    })
+    const books = await Book.find({ seller: req.params.sellerId, isSold: false })
       .populate("seller", "name email phone")
       .sort({ createdAt: -1 });
-
     res.json(books);
-
   } catch (error) {
     res.status(500).json({ message: "Server error" });
   }
@@ -149,23 +105,10 @@ router.put("/:id", verifyToken, async (req, res) => {
   try {
     const book = await Book.findById(req.params.id);
 
-    if (!book) {
-      return res.status(404).json({ message: "Book not found" });
-    }
+    if (!book) return res.status(404).json({ message: "Book not found" });
+    if (book.seller.toString() !== req.userId) return res.status(403).json({ message: "Not authorized" });
 
-    if (book.seller.toString() !== req.userId) {
-      return res.status(403).json({ message: "Not authorized" });
-    }
-
-    const {
-      title,
-      author,
-      price,
-      category,
-      condition,
-      description,
-      location
-    } = req.body;
+    const { title, author, price, category, condition, description, location } = req.body;
 
     book.title = title;
     book.author = author;
@@ -176,14 +119,9 @@ router.put("/:id", verifyToken, async (req, res) => {
     book.location = location;
 
     await book.save();
-
-    res.json({
-      message: "Book updated successfully",
-      book
-    });
+    res.json({ message: "Book updated successfully", book });
 
   } catch (error) {
-    console.log(error);
     res.status(500).json({ message: "Server error" });
   }
 });
@@ -196,12 +134,8 @@ router.get("/:id", async (req, res) => {
     const book = await Book.findById(req.params.id)
       .populate("seller", "name email phone");
 
-    if (!book) {
-      return res.status(404).json({ message: "Book not found" });
-    }
-
+    if (!book) return res.status(404).json({ message: "Book not found" });
     res.json(book);
-
   } catch (error) {
     res.status(500).json({ message: "Server error" });
   }
@@ -214,16 +148,24 @@ router.delete("/:id", verifyToken, async (req, res) => {
   try {
     const book = await Book.findById(req.params.id);
 
-    if (!book) {
-      return res.status(404).json({ message: "Book not found" });
-    }
+    if (!book) return res.status(404).json({ message: "Book not found" });
+    if (book.seller.toString() !== req.userId) return res.status(403).json({ message: "Not authorized" });
 
-    if (book.seller.toString() !== req.userId) {
-      return res.status(403).json({ message: "Not authorized" });
+    // ✅ Delete ALL images from Cloudinary
+    if (book.images && book.images.length > 0) {
+      for (const imageUrl of book.images) {
+        try {
+          const urlParts = imageUrl.split("/");
+          const filename = urlParts[urlParts.length - 1].split(".")[0];
+          const publicId = `boipara-books/${filename}`;
+          await cloudinary.uploader.destroy(publicId);
+        } catch (cloudErr) {
+          console.log("Cloudinary delete error:", cloudErr.message);
+        }
+      }
     }
 
     await book.deleteOne();
-
     res.json({ message: "Book deleted successfully" });
 
   } catch (error) {
@@ -238,17 +180,11 @@ router.put("/:id/sold", verifyToken, async (req, res) => {
   try {
     const book = await Book.findById(req.params.id);
 
-    if (!book) {
-      return res.status(404).json({ message: "Book not found" });
-    }
-
-    if (book.seller.toString() !== req.userId) {
-      return res.status(403).json({ message: "Not authorized" });
-    }
+    if (!book) return res.status(404).json({ message: "Book not found" });
+    if (book.seller.toString() !== req.userId) return res.status(403).json({ message: "Not authorized" });
 
     book.isSold = true;
     await book.save();
-
     res.json({ message: "Book marked as sold" });
 
   } catch (error) {
@@ -261,15 +197,11 @@ router.put("/:id/sold", verifyToken, async (req, res) => {
 // ==============================
 router.get("/location/:city", async (req, res) => {
   try {
-    const city = req.params.city;
-
     const books = await Book.find({
-      location: { $regex: city, $options: "i" },
+      location: { $regex: req.params.city, $options: "i" },
       isSold: false
     }).populate("seller", "name email phone");
-
     res.json(books);
-
   } catch (error) {
     res.status(500).json({ message: "Server error" });
   }

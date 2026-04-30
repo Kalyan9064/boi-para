@@ -22,6 +22,7 @@ function Home() {
 
    API.get(`/api/books?page=${page}`)
   .then(res => {
+    console.log(res.data);
     setBooks(res.data);
     setLoading(false);
   })

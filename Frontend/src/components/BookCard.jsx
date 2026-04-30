@@ -108,7 +108,8 @@ function BookCard({ book }) {
           <div className="image-wrapper">
 
             <img
-              src={`${import.meta.env.VITE_API_URL}/uploads/${book.image}`}
+              src={book.images && book.images[0] ? book.images[0] : "/placeholder-book.jpg"}
+              onError={(e) => { e.target.src = "/placeholder-book.jpg"; }}
               alt="book"
               className="book-image"
             />

@@ -12,6 +12,7 @@ function Register() {
     phone: ""
   });
 
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -24,33 +25,80 @@ function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // 🔴 Validation
+    if (!form.name || !form.email || !form.password || !form.phone) {
+      setError("All fields are required!");
+      return;
+    }
+
+    // Email validation
+    const emailRegex = /\S+@\S+\.\S+/;
+    if (!emailRegex.test(form.email)) {
+      setError("Invalid email format");
+      return;
+    }
+
+    // Phone validation
+    if (form.phone.length < 10) {
+      setError("Phone must be at least 10 digits");
+      return;
+    }
+
     try {
+      setError("");
       await API.post("/api/auth/register", form);
 
       alert("Registered successfully");
       navigate("/login");
 
     } catch (err) {
-      alert(err.response?.data?.message || "Error");
+      setError(err.response?.data?.message || "Error");
     }
   };
 
   return (
     <div className="auth-container">
-
       <div className="auth-card">
 
         <h2 className="auth-title">Sign Up</h2>
 
+        {error && <p style={{ color: "red" }}>{error}</p>}
+
         <form onSubmit={handleSubmit}>
 
-          <input name="name" placeholder="Name" className="auth-input" onChange={handleChange} />
+          <input
+            name="name"
+            placeholder="Name"
+            className="auth-input"
+            onChange={handleChange}
+            required
+          />
 
-          <input name="email" placeholder="Email" className="auth-input" onChange={handleChange} />
+          <input
+            name="email"
+            type="email"
+            placeholder="Email"
+            className="auth-input"
+            onChange={handleChange}
+            required
+          />
 
-          <input type="password" name="password" placeholder="Password" className="auth-input" onChange={handleChange} />
+          <input
+            type="password"
+            name="password"
+            placeholder="Password"
+            className="auth-input"
+            onChange={handleChange}
+            required
+          />
 
-          <input name="phone" placeholder="Phone (+91...)" className="auth-input" onChange={handleChange} />
+          <input
+            name="phone"
+            placeholder="Phone (+91...)"
+            className="auth-input"
+            onChange={handleChange}
+            required
+          />
 
           <button className="auth-btn">Register</button>
 
@@ -63,7 +111,6 @@ function Register() {
         </div>
 
       </div>
-
     </div>
   );
 }

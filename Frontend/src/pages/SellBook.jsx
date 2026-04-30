@@ -14,39 +14,70 @@ function SellBook() {
     location: ""
   });
 
-  const [image, setImage] = useState(null);
+  const [images, setImages] = useState([]);         // actual File objects
+  const [previews, setPreviews] = useState([]);     // preview URLs for display
 
+  // ==============================
+  // HANDLE TEXT INPUTS
+  // ==============================
   const handleChange = (e) => {
-    if (e.target.name === "image") {
-      setImage(e.target.files[0]);
-    } else {
-      setForm({
-        ...form,
-        [e.target.name]: e.target.value
-      });
-    }
+    setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  // ==============================
+  // HANDLE IMAGE SELECT
+  // ==============================
+  const handleImageChange = (e) => {
+    const selected = Array.from(e.target.files);
+
+    // max 5 images total
+    const combined = [...images, ...selected].slice(0, 5);
+    setImages(combined);
+
+    // generate preview URLs
+    const urls = combined.map(file => URL.createObjectURL(file));
+    setPreviews(urls);
+  };
+
+  // ==============================
+  // REMOVE ONE IMAGE
+  // ==============================
+  const removeImage = (index) => {
+    const newImages = images.filter((_, i) => i !== index);
+    const newPreviews = previews.filter((_, i) => i !== index);
+    setImages(newImages);
+    setPreviews(newPreviews);
+  };
+
+  // ==============================
+  // SUBMIT
+  // ==============================
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     const token = localStorage.getItem("token");
-
     if (!token) {
       alert("Please login first");
+      return;
+    }
+
+    if (images.length === 0) {
+      alert("Please upload at least 1 image");
       return;
     }
 
     try {
       const data = new FormData();
 
+      // append all text fields
       for (let key in form) {
         data.append(key, form[key]);
       }
 
-      if (image) {
-        data.append("image", image);
-      }
+      // append all images with same key "images"
+      images.forEach(img => {
+        data.append("images", img);
+      });
 
       await API.post("/api/books", data, {
         headers: {
@@ -55,7 +86,7 @@ function SellBook() {
         }
       });
 
-      alert("Book added successfully");
+      alert("Book added successfully! 🎉");
       window.location.href = "/";
 
     } catch (error) {
@@ -68,105 +99,135 @@ function SellBook() {
     <div className="sell-container">
 
       <h1 className="sell-title">Sell Your Book</h1>
-
       <p className="sell-subtitle">
         Post an ad to find a new home for your pre-loved book. It's completely free.
       </p>
 
       <form onSubmit={handleSubmit} className="sell-card">
 
-        {/* PHOTO */}
+        {/* ======== PHOTOS SECTION ======== */}
         <div className="section-title">Photos</div>
 
         <div className="photo-box">
-          <p>Upload book photos</p>
-          <input type="file" name="image" onChange={handleChange} />
+          <p>📸 Upload up to 5 book photos</p>
+
+          <input
+            type="file"
+            accept="image/*"
+            multiple                        
+            onChange={handleImageChange}
+            style={{ marginTop: "10px" }}
+          />
+
+          <p style={{ fontSize: "12px", color: "#999", marginTop: "8px" }}>
+            {images.length}/5 images selected
+          </p>
         </div>
 
-        {/* BOOK DETAILS */}
+        {/* ======== IMAGE PREVIEWS ======== */}
+        {previews.length > 0 && (
+          <div className="preview-grid">
+            {previews.map((url, index) => (
+              <div key={index} className="preview-item">
 
-         {/* BOOK DETAILS */}
-<div className="section-title">Book Details</div>
+                <img
+                  src={url}
+                  alt={`preview-${index}`}
+                  className="preview-img"
+                />
 
-<label className="input-label">Book Title</label>
-<input
-  type="text"
-  name="title"
-  placeholder="e.g. 1984 by George Orwell"
-  className="form-control"
-  onChange={handleChange}
-/>
+                {/* REMOVE BUTTON */}
+                <button
+                  type="button"
+                  className="preview-remove"
+                  onClick={() => removeImage(index)}
+                >
+                  ✕
+                </button>
 
-<label className="input-label">Author</label>
-<input
-  type="text"
-  name="author"
-  placeholder="e.g. George Orwell"
-  className="form-control"
-  onChange={handleChange}
-/>
+                {/* FIRST IMAGE BADGE */}
+                {index === 0 && (
+                  <span className="preview-main-badge">Main</span>
+                )}
 
-<label className="input-label">Category</label>
-<select
-  name="category"
-  className="form-control"
-  onChange={handleChange}
->
-  <option value="">Select Category</option>
-  <option value="literature">Literature</option>
-  <option value="academic">Academic</option>
-  <option value="classic">Classic</option>
-  <option value="fiction">Fiction</option>
-</select>
+              </div>
+            ))}
+          </div>
+        )}
 
-<label className="input-label">Condition</label>
-<select
-  name="condition"
-  className="form-control"
-  onChange={handleChange}
->
-  <option value="">Select Condition</option>
-  <option>Like New</option>
-  <option>Very Good</option>
-  <option>Good</option>
-  <option>Fair</option>
-</select>
+        {/* ======== BOOK DETAILS ======== */}
+        <div className="section-title">Book Details</div>
 
-<label className="input-label">Description</label>
-<textarea
-  name="description"
-  placeholder="Describe the book..."
-  className="form-control"
-  onChange={handleChange}
-/>
+        <label className="input-label">Book Title</label>
+        <input
+          type="text"
+          name="title"
+          placeholder="e.g. 1984 by George Orwell"
+          className="form-control"
+          onChange={handleChange}
+        />
 
-{/* PRICE & LOCATION */}
-<div className="section-title">Pricing & Location</div>
+        <label className="input-label">Author</label>
+        <input
+          type="text"
+          name="author"
+          placeholder="e.g. George Orwell"
+          className="form-control"
+          onChange={handleChange}
+        />
 
-<label className="input-label">Price</label>
-<input
-  type="number"
-  name="price"
-  placeholder="₹ Price"
-  className="form-control"
-  onChange={handleChange}
-/>
+        <label className="input-label">Category</label>
+        <select name="category" className="form-control" onChange={handleChange}>
+          <option value="">Select Category</option>
+          <option value="literature">Literature</option>
+          <option value="academic">Academic</option>
+          <option value="classic">Classic</option>
+          <option value="fiction">Fiction</option>
+        </select>
 
-<label className="input-label">Location</label>
-<input
-  type="text"
-  name="location"
-  placeholder="e.g. Kolkata"
-  className="form-control"
-  onChange={handleChange}
-/>
+        <label className="input-label">Condition</label>
+        <select name="condition" className="form-control" onChange={handleChange}>
+          <option value="">Select Condition</option>
+          <option>Like New</option>
+          <option>Very Good</option>
+          <option>Good</option>
+          <option>Fair</option>
+        </select>
+
+        <label className="input-label">Description</label>
+        <textarea
+          name="description"
+          placeholder="Describe the book..."
+          className="form-control"
+          onChange={handleChange}
+        />
+
+        {/* ======== PRICE & LOCATION ======== */}
+        <div className="section-title">Pricing & Location</div>
+
+        <label className="input-label">Price</label>
+        <input
+          type="number"
+          name="price"
+          placeholder="₹ Price"
+          className="form-control"
+          onChange={handleChange}
+        />
+
+        <label className="input-label">Location</label>
+        <input
+          type="text"
+          name="location"
+          placeholder="e.g. Kolkata"
+          className="form-control"
+          onChange={handleChange}
+        />
 
         <button type="submit" className="post-btn">
-          Post Now
+          Post Now 🚀
         </button>
 
       </form>
-
     </div>
   );
 }

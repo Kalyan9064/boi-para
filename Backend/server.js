@@ -1,48 +1,77 @@
+require("dotenv").config();
+
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
-require("dotenv").config();
-
-// ✅ ENV DEBUG - Check if Render is injecting env vars correctly
-console.log("🔍 ENV CHECK ON STARTUP:");
-console.log("EMAIL_USER:", process.env.EMAIL_USER);
-console.log("EMAIL_PASS exists:", !!process.env.EMAIL_PASS);
-console.log("CLIENT_URL:", process.env.CLIENT_URL);
-console.log("MONGO_URI exists:", !!process.env.MONGO_URI);
-console.log("PORT:", process.env.PORT);
 
 const authRoutes = require("./routes/auth");
 const bookRoutes = require("./routes/book");
 
 const app = express();
 
-// Middleware
+/* =========================
+   🔥 SECURE CORS CONFIG
+   ========================= */
+
+const allowedOrigins = [
+  "http://localhost:5173",        // local frontend
+  "https://boi-para.vercel.app"   // deployed frontend
+];
+
 app.use(cors({
-  origin: process.env.CLIENT_URL,
+  origin: function (origin, callback) {
+    // allow requests with no origin (Postman, mobile apps)
+    if (!origin) return callback(null, true);
+
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    } else {
+      return callback(new Error("Not allowed by CORS"));
+    }
+  },
   credentials: true
 }));
+
+/* =========================
+   MIDDLEWARE
+   ========================= */
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Routes
+/* =========================
+   ROUTES
+   ========================= */
+
 app.use("/api/auth", authRoutes);
 app.use("/api/books", bookRoutes);
 
-// Serve images
+/* =========================
+   STATIC FILES
+   ========================= */
+
 app.use("/uploads", express.static("uploads"));
 
-// MongoDB connection
+/* =========================
+   DATABASE
+   ========================= */
+
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("MongoDB connected ✅"))
   .catch(err => console.error("MongoDB error:", err.message));
 
-// Test route
+/* =========================
+   TEST ROUTE
+   ========================= */
+
 app.get("/", (req, res) => {
-  res.send("Old Book API running");
+  res.send("BoiPara API running 🚀");
 });
 
-// Dynamic port
+/* =========================
+   SERVER START
+   ========================= */
+
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {

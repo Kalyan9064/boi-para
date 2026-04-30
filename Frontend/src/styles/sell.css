@@ -1,78 +1,64 @@
-.sell-container {
-  max-width: 800px;
-  margin: auto;
-  padding: 40px 20px;
+/* ======== IMAGE PREVIEW GRID ======== */
+.preview-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+  margin-bottom: 20px;
 }
 
-.sell-title {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 40px;
-  text-align: center;
-  margin-bottom: 10px;
+.preview-item {
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 2px solid #e5dfd6;
+  aspect-ratio: 1;
 }
 
-.sell-subtitle {
-  text-align: center;
-  color: #7a6a58;
-  margin-bottom: 30px;
-}
-
-.sell-card {
-  border: 1px solid #e5dfd6;
-  border-radius: 10px;
-  padding: 30px;
-  background: #f9f6f1;
-}
-
-/* PHOTO */
-.photo-box {
-  border: 2px dashed #d8d0c5;
-  padding: 40px;
-  text-align: center;
-  border-radius: 10px;
-  margin-bottom: 30px;
-}
-
-.photo-box p {
-  color: #7a6a58;
-  margin-bottom: 10px;
-}
-
-/* SECTION */
-.section-title {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 22px;
-  margin-bottom: 15px;
-}
-
-/* INPUTS */
-.form-control {
+.preview-img {
   width: 100%;
-  padding: 10px;
-  margin-bottom: 15px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
-/* BUTTON */
-.post-btn {
+/* REMOVE BUTTON */
+.preview-remove {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background: rgba(0,0,0,0.6);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 22px;
+  height: 22px;
+  font-size: 11px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.2s;
+}
+
+.preview-remove:hover {
+  background: #e53e3e;
+}
+
+/* MAIN BADGE */
+.preview-main-badge {
+  position: absolute;
+  bottom: 4px;
+  left: 4px;
   background: #8b5a2b;
   color: white;
-  padding: 12px;
-  width: 100%;
-  border: none;
-  border-radius: 6px;
-  margin-top: 20px;
-  cursor: pointer;
+  font-size: 10px;
+  padding: 2px 7px;
+  border-radius: 10px;
 }
 
-.post-btn:hover {
-  background: #6a4420;
-}
-
-.input-label {
-  font-size: 14px;
-  color: #5a4a3a;
-  margin-bottom: 5px;
-  display: block;
+/* MOBILE */
+@media (max-width: 640px) {
+  .preview-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
