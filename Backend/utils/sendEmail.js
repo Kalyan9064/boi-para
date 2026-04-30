@@ -7,14 +7,15 @@ const sendVerificationEmail = async (email, token) => {
     const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
   port: 587,
-  secure: false, // important
+  secure: false,
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS
   },
   tls: {
     rejectUnauthorized: false
-  }
+  },
+  family: 4 // 🔥 FORCE IPv4 (THIS FIXES YOUR ERROR)
 });
 
     console.log("📧 STEP 2: Transport created");
