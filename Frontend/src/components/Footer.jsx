@@ -64,7 +64,7 @@ function Footer() {
             href="mailto:support.boipara@gmail.com"
             className="contact-email"
           >
-            support.boipara@gmail.com
+            boipara.support@gmail.com
           </a>
         </div>
 
