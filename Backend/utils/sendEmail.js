@@ -1,54 +1,43 @@
-const nodemailer = require("nodemailer");
+const axios = require("axios");
 
 const sendVerificationEmail = async (email, token) => {
   console.log("📧 STEP 1: Function called");
 
   try {
-    const transporter = nodemailer.createTransport({
-      host: "smtp-relay.brevo.com",
-      port: 587,
-      secure: false,
-      auth: {
-        user: process.env.EMAIL_USER,   // Brevo email
-        pass: process.env.EMAIL_PASS,   // Brevo API key
-      },
-    });
-
-    console.log("📧 STEP 2: Transport created");
-
     const verificationLink =
       `${process.env.CLIENT_URL}/verify-email/${token}`;
 
-    console.log("🔗 STEP 3: Link created:", verificationLink);
+    console.log("🔗 STEP 2: Link created:", verificationLink);
 
-    const info = await transporter.sendMail({
-      from: `"Boi Para" <${process.env.EMAIL_USER}>`,
-      to: email,
-      subject: "Verify Your Email",
-      html: `
-        <h2>Email Verification</h2>
-        <p>Click below to verify your account:</p>
-        <a href="${verificationLink}" 
-           style="
-             display:inline-block;
-             padding:12px 20px;
-             background:#16a34a;
-             color:white;
-             text-decoration:none;
-             border-radius:6px;
-             font-weight:bold;
-           ">
-           Verify Email
-        </a>
-      `,
-    });
+    const response = await axios.post(
+      "https://api.brevo.com/v3/smtp/email",
+      {
+        sender: {
+          name: "Boi Para",
+          email: process.env.EMAIL_USER,
+        },
+        to: [{ email }],
+        subject: "Verify Your Email",
+        htmlContent: `
+          <h2>Email Verification</h2>
+          <p>Click below to verify your account:</p>
+          <a href="${verificationLink}">Verify Email</a>
+        `,
+      },
+      {
+        headers: {
+          "api-key": process.env.EMAIL_PASS,
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
-    console.log("✅ STEP 4: Email sent");
-    console.log("Message ID:", info.messageId);
+    console.log("✅ STEP 3: Email sent");
+    console.log(response.data);
 
   } catch (error) {
     console.log("❌ EMAIL ERROR:");
-    console.log(error.message);
+    console.log(error.response?.data || error.message);
   }
 };
 
