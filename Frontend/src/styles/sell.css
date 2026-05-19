@@ -1,64 +1,212 @@
-/* ======== IMAGE PREVIEW GRID ======== */
+/* =========================
+   GLOBAL
+========================= */
+
+.sell-container {
+  min-height: 100vh;
+  background: #f5f1eb;
+  padding: 50px 20px;
+}
+
+.sell-title {
+  text-align: center;
+  font-size: 3rem;
+  color: #4b2414;
+  margin-bottom: 10px;
+  font-family: "Playfair Display", serif;
+}
+
+.sell-subtitle {
+  text-align: center;
+  color: #7b6b63;
+  max-width: 650px;
+  margin: auto;
+  margin-bottom: 40px;
+  line-height: 1.7;
+}
+
+/* =========================
+   MAIN CARD
+========================= */
+
+.sell-card {
+  max-width: 900px;
+  margin: auto;
+  background: white;
+  padding: 40px;
+  border-radius: 18px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+}
+
+/* =========================
+   SECTION TITLE
+========================= */
+
+.section-title {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #4b2414;
+  margin-top: 30px;
+  margin-bottom: 18px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #ece5dd;
+}
+
+/* =========================
+   PHOTO BOX
+========================= */
+
+.photo-box {
+  border: 2px dashed #caa47c;
+  background: #fcfaf7;
+  border-radius: 14px;
+  padding: 30px;
+  text-align: center;
+}
+
+.photo-box p {
+  color: #7b6b63;
+}
+
+/* =========================
+   PREVIEW GRID
+========================= */
+
 .preview-grid {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 10px;
-  margin-bottom: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 15px;
+  margin-top: 20px;
 }
 
 .preview-item {
   position: relative;
-  border-radius: 8px;
   overflow: hidden;
-  border: 2px solid #e5dfd6;
-  aspect-ratio: 1;
+  border-radius: 12px;
 }
 
 .preview-img {
   width: 100%;
-  height: 100%;
+  height: 180px;
   object-fit: cover;
-  display: block;
+  border-radius: 12px;
 }
 
-/* REMOVE BUTTON */
 .preview-remove {
   position: absolute;
-  top: 4px;
-  right: 4px;
-  background: rgba(0,0,0,0.6);
-  color: white;
+  top: 8px;
+  right: 8px;
+  width: 28px;
+  height: 28px;
   border: none;
-  border-radius: 50%;
-  width: 22px;
-  height: 22px;
-  font-size: 11px;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: 0.2s;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.75);
+  color: white;
+  font-size: 14px;
 }
 
-.preview-remove:hover {
-  background: #e53e3e;
-}
-
-/* MAIN BADGE */
 .preview-main-badge {
   position: absolute;
-  bottom: 4px;
-  left: 4px;
-  background: #8b5a2b;
+  bottom: 10px;
+  left: 10px;
+  background: #b77a3d;
   color: white;
-  font-size: 10px;
-  padding: 2px 7px;
-  border-radius: 10px;
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 12px;
 }
 
-/* MOBILE */
-@media (max-width: 640px) {
+/* =========================
+   LABELS
+========================= */
+
+.input-label {
+  display: block;
+  margin-top: 18px;
+  margin-bottom: 8px;
+  color: #4b2414;
+  font-weight: 600;
+}
+
+/* =========================
+   INPUTS
+========================= */
+
+.form-control {
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1px solid #d8d0c8;
+  background: #fff;
+  font-size: 15px;
+  transition: 0.3s;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.form-control:focus {
+  border-color: #b77a3d;
+  box-shadow: 0 0 0 4px rgba(183, 122, 61, 0.12);
+}
+
+textarea.form-control {
+  min-height: 140px;
+  resize: vertical;
+}
+
+/* =========================
+   PRICE + LOCATION ROW
+========================= */
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+/* =========================
+   BUTTON
+========================= */
+
+.post-btn {
+  width: 100%;
+  margin-top: 35px;
+  padding: 15px;
+  border: none;
+  border-radius: 12px;
+  background: #b77a3d;
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.post-btn:hover {
+  background: #9d6530;
+  transform: translateY(-2px);
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 768px) {
+
+  .sell-card {
+    padding: 25px;
+  }
+
+  .sell-title {
+    font-size: 2.2rem;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
   .preview-grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
   }
 }
