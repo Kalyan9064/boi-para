@@ -52,7 +52,7 @@ function Register() {
       navigate("/login");
 
     } catch (err) {
-      setError(err.response?.data?.message || "Error");
+     setError(err.response?.data?.message || "Error");
     }
   };
 

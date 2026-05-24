@@ -14,6 +14,7 @@ import Register from "./pages/Register";
 import Account from "./pages/Account";
 import EditBook from "./pages/EditBook";
 import Wishlist from "./pages/Wishlist";
+import Footer from "./components/Footer";
 
 
 function App() {
@@ -37,6 +38,8 @@ function App() {
         <Route path="/edit-book/:id" element={<EditBook />} />
         <Route path="/wishlist" element={<Wishlist />} />
       </Routes>
+
+      <Footer />
     </>
   );
 }

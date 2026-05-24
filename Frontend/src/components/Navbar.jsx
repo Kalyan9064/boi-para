@@ -27,9 +27,16 @@ function Navbar() {
 
         {/* LEFT */}
         <div className="logo">
-          <Link to="/#hero">📚 Boi-Para</Link>
+          <a href="/"> Boi-Para
+            <img
+              src="/boipara-logo.png"
+              alt="Boi Para"
+              style={{ height: "50px" }}
+            />
+          </a>
         </div>
 
+        {/* <Link to="/#hero">📚 Boi-Para</Link> */}
         {/* RIGHT */}
         <div className="nav-links">
 

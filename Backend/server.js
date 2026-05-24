@@ -6,12 +6,11 @@ const cors = require("cors");
 
 const authRoutes = require("./routes/auth");
 const bookRoutes = require("./routes/book");
+const bookRequestRoutes = require("./routes/bookRequest");
 
 const app = express();
 
-/* =========================
-   🔥 SECURE CORS CONFIG
-   ========================= */
+/*SECURE CORS CONFIG*/
 
 const allowedOrigins = [
   "http://localhost:5173",        // local frontend
@@ -45,6 +44,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use("/api/auth", authRoutes);
 app.use("/api/books", bookRoutes);
+app.use("/api/requests", bookRequestRoutes);
 
 /* =========================
    STATIC FILES

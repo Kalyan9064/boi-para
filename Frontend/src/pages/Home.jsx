@@ -6,6 +6,7 @@ import BookCard from "../components/BookCard";
 import HowItWorks from "../components/HowItWorks";
 import Footer from "../components/Footer";
 import "../styles/home.css";
+import BookRequestSlider from "./BookRequestSlider";
 
 function Home() {
 
@@ -35,11 +36,12 @@ function Home() {
   return (
   <div>
 
-    {/* 🎯 HERO */}
+    {/*  HERO */}
     <Hero />
     <HowItWorks />
+    <BookRequestSlider />
 
-    {/* 📦 MAIN CONTENT */}
+    {/*  MAIN CONTENT */}
     <div className="container mt-5">
 
       <h2>Freshly Listed</h2>
@@ -47,21 +49,21 @@ function Home() {
            Discover the latest additions to our community library.
       </p>
 
-      {/* 🔄 LOADING */}
+      {/*  LOADING */}
       {loading && (
         <div className="text-center mb-3">
           <h5>Loading...</h5>
         </div>
       )}
 
-      {/* ❌ EMPTY */}
+      {/*  EMPTY */}
       {!loading && books.length === 0 && (
         <div className="text-center mt-5">
-          <h5>No books found 😢</h5>
+          <h5>No books found </h5>
         </div>
       )}
 
-      {/* 📚 BOOK GRID */}
+      {/*  BOOK GRID */}
       <div className="row">
         {books.map(book => (
           <BookCard key={book._id} book={book} />
@@ -72,9 +74,7 @@ function Home() {
 
     {/* Divider Line */}
     <div className="footer-divider"></div>
-
     <Footer />
-
   </div>
 );
 }

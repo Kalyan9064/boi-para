@@ -1,0 +1,314 @@
+/* ================= SECTION ================= */
+.slider-section {
+  padding: 60px 0;
+  background: #faf7f2;
+  overflow: hidden;
+}
+
+/* ================= TOP ROW ================= */
+.slider-top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  padding: 0 20px;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.slider-heading {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 32px;
+  color: #2c1e16;
+  margin: 0;
+}
+
+.see-all-btn {
+  background: transparent;
+  border: 1px solid #8b5a2b;
+  color: #8b5a2b;
+  border-radius: 20px;
+  padding: 6px 18px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.see-all-btn:hover {
+  background: #8b5a2b;
+  color: white;
+}
+
+/* ================= SLIDER ================= */
+.slider-wrapper {
+  overflow: hidden;
+  padding: 10px 0;
+}
+
+.slider-track {
+  display: flex;
+  gap: 20px;
+  padding: 0 20px;
+  animation: slide 25s linear infinite;
+  width: max-content;
+}
+
+.slider-track:hover {
+  animation-play-state: paused;
+}
+
+@keyframes slide {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* ================= CARD ================= */
+.request-card {
+  min-width: 280px;
+  max-width: 280px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  padding: 24px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* LOOKING FOR LABEL */
+.card-label {
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #8b5a2b;
+  background: #f3efe6;
+  padding: 4px 10px;
+  border-radius: 20px;
+  width: fit-content;
+}
+
+/* BOOK TITLE */
+.card-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 22px;
+  color: #2c1e16;
+  font-weight: 700;
+  margin: 0;
+  line-height: 1.3;
+
+  /* clamp to 2 lines */
+  display: -webkit-box;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* AUTHOR */
+.card-author {
+  color: #8b5a2b;
+  font-size: 14px;
+  margin: 0;
+}
+
+/* DIVIDER */
+.card-divider {
+  border: none;
+  height: 1px;
+  background: #f0ebe3;
+  margin: 4px 0;
+}
+
+/* MESSAGE */
+.card-message {
+  font-style: italic;
+  color: #6a5a4a;
+  font-size: 14px;
+  border-left: 3px solid #e5dfd6;
+  padding-left: 10px;
+  margin: 0;
+
+  /* clamp to 2 lines */
+  display: -webkit-box;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* LOCATION + TIME */
+.card-meta {
+  font-size: 13px;
+  color: #aaa;
+  margin: 0;
+}
+
+/* BUYER NAME */
+.card-buyer {
+  font-size: 14px;
+  font-weight: 600;
+  color: #2c1e16;
+  margin: 0;
+}
+
+/* WHATSAPP BUTTON */
+.whatsapp-btn {
+  background: #25D366;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  width: 100%;
+  padding: 10px;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+  transition: 0.3s;
+  margin-top: auto;
+}
+
+.whatsapp-btn:hover {
+  background: #1da851;
+}
+
+/* ================= BOTTOM ================= */
+.slider-bottom {
+  text-align: center;
+  margin-top: 30px;
+}
+
+.request-book-btn {
+  background: #8b5a2b;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 28px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.request-book-btn:hover {
+  background: #6a4420;
+}
+
+/* ================= MOBILE ================= */
+@media (max-width: 640px) {
+  .slider-heading {
+    font-size: 22px;
+  }
+
+  .request-card {
+    min-width: 200px;
+    max-width: 200px;
+    padding: 16px;
+  }
+
+  .card-title {
+    font-size: 17px;
+  }
+}
+
+/* ================= MODAL ================= */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-box {
+  background: white;
+  border-radius: 16px;
+  padding: 30px;
+  width: 100%;
+  max-width: 440px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-header h2 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 26px;
+  color: #2c1e16;
+  margin: 0;
+}
+
+.modal-close {
+  background: #f3efe6;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 14px;
+  color: #2c1e16;
+  transition: 0.2s;
+}
+
+.modal-close:hover {
+  background: #e5dfd6;
+}
+
+.modal-input {
+  width: 100%;
+  padding: 11px 14px;
+  border: 1px solid #e5dfd6;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+  box-sizing: border-box;
+  background: #fdfaf6;
+  transition: 0.2s;
+}
+
+.modal-input:focus {
+  border-color: #8b5a2b;
+  box-shadow: 0 0 0 3px rgba(139,90,43,0.1);
+}
+
+.modal-submit {
+  background: #8b5a2b;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: 0.3s;
+  width: 100%;
+}
+
+.modal-submit:hover {
+  background: #6a4420;
+}
+
+/* MOBILE */
+@media (max-width: 480px) {
+  .modal-box {
+    margin: 0 16px;
+    padding: 24px 18px;
+  }
+}
+
+.request-divider {
+  height: 2px;
+  width: 100%;
+  background: #8B5A2B;
+  margin-top: 50px;
+}
