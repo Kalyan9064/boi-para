@@ -5,6 +5,8 @@ import { Link, useNavigate } from "react-router-dom";
 function Navbar() {
   const token = localStorage.getItem("token");
   const [search, setSearch] = useState("");
+  const [menuOpen, setMenuOpen] = useState(false);
+
   const navigate = useNavigate();
 
   // LOGOUT
@@ -19,15 +21,17 @@ function Navbar() {
     if (!search.trim()) return;
 
     navigate(`/search?q=${search}`);
+    setMenuOpen(false);
   };
 
   return (
     <nav className="navbar">
       <div className="container navbar-container">
 
-        {/* LEFT */}
+        {/* LOGO */}
         <div className="logo">
-          <a href="/"> Boi-Para
+          <a href="/">
+            Boi-Para
             <img
               src="/boipara-logo.png"
               alt="Boi Para"
@@ -36,12 +40,22 @@ function Navbar() {
           </a>
         </div>
 
-        {/* <Link to="/#hero">📚 Boi-Para</Link> */}
-        {/* RIGHT */}
-        <div className="nav-links">
+        {/* HAMBURGER ICON */}
+<div
+  className="hamburger"
+  onClick={() => setMenuOpen(!menuOpen)}
+>
+  {menuOpen ? "✕" : "☰"}
+</div>
 
-          {/* 🔍 SEARCH (LEFT OF BROWSE) */}
-          <form onSubmit={handleSearch} className="search-box small-search">
+        {/* NAV LINKS */}
+        <div className={`nav-links ${menuOpen ? "active" : ""}`}>
+
+          {/* SEARCH */}
+          <form
+            onSubmit={handleSearch}
+            className="search-box small-search"
+          >
             <span className="search-icon">🔍</span>
 
             <input
@@ -52,8 +66,9 @@ function Navbar() {
             />
           </form>
 
-          {/* BROWSE */}
-          <Link to="/browse">Browse Books</Link>
+          <Link to="/browse" onClick={() => setMenuOpen(false)}>
+            Browse Books
+          </Link>
 
           {token && (
             <span
@@ -65,27 +80,45 @@ function Navbar() {
                   alert("Please login first");
                   window.location.href = "/login";
                 }
+                setMenuOpen(false);
               }}
             >
               Sell
             </span>
           )}
 
-          <Link to="/wishlist">Wishlist ❤️</Link>
+          <Link
+            to="/wishlist"
+            onClick={() => setMenuOpen(false)}
+          >
+            Wishlist ❤️
+          </Link>
 
           {token ? (
             <>
-              <Link to="/account">My Account</Link>
-              <button onClick={handleLogout} className="logout-btn">
+              <Link
+                to="/account"
+                onClick={() => setMenuOpen(false)}
+              >
+                My Account
+              </Link>
+
+              <button
+                onClick={handleLogout}
+                className="logout-btn"
+              >
                 Logout
               </button>
             </>
           ) : (
-            <Link to="/login">Login</Link>
+            <Link
+              to="/login"
+              onClick={() => setMenuOpen(false)}
+            >
+              Login
+            </Link>
           )}
-
         </div>
-
       </div>
     </nav>
   );
