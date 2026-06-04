@@ -36,4 +36,17 @@ router.get("/", async (req, res) => {
   }
 });
 
+
+//For all requests
+
+router.get("/all-requests", async (req, res) => {
+  try {
+    const requests = await BookRequest.find({})
+      .populate("requestedBy", "name phone")
+      .sort({ createdAt: -1 });
+    res.json(requests);
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
 module.exports = router;

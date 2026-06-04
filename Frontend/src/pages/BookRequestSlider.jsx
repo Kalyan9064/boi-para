@@ -99,7 +99,21 @@ function BookRequestSlider() {
                 </h2>
                 <button
                     className="see-all-btn"
-                    onClick={() => navigate("/all-requests")}
+                    onClick={() => {
+                        //navigate("/all-requests")
+                          setShowModal(true);  // ← only this
+                    }}
+
+
+                    //  className="request-book-btn"
+                    // onClick={() => {
+                    //     const token = localStorage.getItem("token");
+                    //     if (!token) {
+                    //         alert("Please login first");
+                    //         return;
+                    //     }
+                    //     setShowModal(true);  // ← only this
+                    // }}
                 >
                     See All →
                 </button>

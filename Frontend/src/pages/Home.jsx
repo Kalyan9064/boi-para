@@ -74,7 +74,7 @@ function Home() {
 
     {/* Divider Line */}
     <div className="footer-divider"></div>
-    <Footer />
+    {/* <Footer /> */}
   </div>
 );
 }
