@@ -41,3 +41,29 @@
   text-align: center;
   margin-top: 10px;
 }
+
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 15px 0;
+  color: #aaa;
+  font-size: 13px;
+  width: 100%;
+}
+
+.google-btn {
+  width: 100%;
+  padding: 10px;
+  background: #fff;
+  color: #000;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 14px;
+  box-sizing: border-box;
+}

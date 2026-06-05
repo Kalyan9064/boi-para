@@ -1,5 +1,6 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
+import GoogleAuthSuccess from "./pages/GoogleAuthSuccess";
 import ScrollToHash from "./components/ScrollToHash";
 import Home from "./pages/Home";
 import VerifyEmail from "./pages/VerifyEmail";
@@ -25,6 +26,7 @@ function App() {
      <ScrollToHash />
 
       <Routes>
+        <Route path="/auth/google/success" element={<GoogleAuthSuccess />} />
         <Route path="/" element={<Home />} />
         <Route path="/verify-email/:token" element={<VerifyEmail />} />
         <Route path="/book/:id" element={<BookDetails />} />
