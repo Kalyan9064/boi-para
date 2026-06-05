@@ -42,7 +42,17 @@ const userSchema = new mongoose.Schema({
       type: mongoose.Schema.Types.ObjectId,
       ref: "Book"
     }
-  ]
+  ],
+
+  // ⭐ Reputation System
+  ratingsAverage: {
+    type: Number,
+    default: 0
+  },
+  ratingsQuantity: {
+    type: Number,
+    default: 0
+  }
 
 }, { timestamps: true });
 

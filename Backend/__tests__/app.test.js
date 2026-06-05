@@ -2,12 +2,14 @@ const request = require("supertest");
 const app = require("../server");
 const User = require("../models/User");
 const Book = require("../models/Book");
+const Review = require("../models/Review");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 
 // Mock Models and Email Utility
 jest.mock("../models/User");
 jest.mock("../models/Book");
+jest.mock("../models/Review");
 jest.mock("../utils/sendEmail", () => jest.fn().mockResolvedValue(true));
 jest.mock("jsonwebtoken");
 jest.mock("bcryptjs");
@@ -361,6 +363,94 @@ describe("BoiPara Backend - Validation & Error Handling Tests", () => {
 
       expect(response.status).toBe(200);
       expect(mockSort).toHaveBeenCalledWith({ price: 1 });
+    });
+  });
+
+  describe("Ratings, Reviews & Reputation Endpoints", () => {
+    beforeEach(() => {
+      jwt.verify.mockReturnValue({ id: "000000000000000000000002" });
+    });
+
+    it("should create review successfully and trigger average calculation", async () => {
+      User.findById.mockResolvedValue({ _id: "000000000000000000000001", name: "John Seller" });
+      Review.findOne.mockResolvedValue(null); // No duplicate review
+      Review.prototype.save = jest.fn().mockResolvedValue(true);
+      
+      Review.findById.mockReturnValue({
+        populate: jest.fn().mockResolvedValue({
+          _id: "reviewId123",
+          review: "Excellent seller!",
+          rating: 5,
+          seller: "000000000000000000000001",
+          reviewer: { _id: "000000000000000000000002", name: "Reviewer User" }
+        })
+      });
+
+      // Mock aggregate for calcAverageRatings
+      Review.aggregate = jest.fn().mockResolvedValue([
+        { _id: "000000000000000000000001", nRating: 1, avgRating: 5.0 }
+      ]);
+      User.findByIdAndUpdate = jest.fn().mockResolvedValue(true);
+
+      const response = await request(app)
+        .post("/api/reviews")
+        .set("Authorization", "Bearer mockToken")
+        .send({
+          seller: "000000000000000000000001",
+          rating: 5,
+          review: "Great condition book, fast dispatch!"
+        });
+
+      expect(response.status).toBe(201);
+      expect(response.body.message).toContain("submitted successfully");
+      expect(response.body.review.rating).toBe(5);
+      expect(User.findByIdAndUpdate).toHaveBeenCalled();
+    });
+
+    it("should fail validation if seller or rating is missing", async () => {
+      const response = await request(app)
+        .post("/api/reviews")
+        .set("Authorization", "Bearer mockToken")
+        .send({
+          review: "Too short"
+        });
+
+      expect(response.status).toBe(400);
+      expect(response.body.message).toBe("Validation failed");
+      expect(response.body.errors).toHaveProperty("seller");
+      expect(response.body.errors).toHaveProperty("rating");
+    });
+
+    it("should prevent duplicate reviews from same reviewer for same seller", async () => {
+      User.findById.mockResolvedValue({ _id: "000000000000000000000001", name: "John Seller" });
+      Review.findOne.mockResolvedValue({ _id: "existingReviewId" }); // Duplicate exists
+
+      const response = await request(app)
+        .post("/api/reviews")
+        .set("Authorization", "Bearer mockToken")
+        .send({
+          seller: "000000000000000000000001",
+          rating: 4,
+          review: "Second attempt review"
+        });
+
+      expect(response.status).toBe(400);
+      expect(response.body.message).toContain("already reviewed this seller");
+    });
+
+    it("should prevent self-reviewing", async () => {
+      // Reviewer ID is mocked as "000000000000000000000002"
+      const response = await request(app)
+        .post("/api/reviews")
+        .set("Authorization", "Bearer mockToken")
+        .send({
+          seller: "000000000000000000000002", // self-reviewing
+          rating: 5,
+          review: "I am awesome!"
+        });
+
+      expect(response.status).toBe(400);
+      expect(response.body.message).toContain("cannot submit a review for yourself");
     });
   });
 });
