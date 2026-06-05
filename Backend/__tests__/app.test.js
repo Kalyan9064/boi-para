@@ -295,4 +295,72 @@ describe("BoiPara Backend - Validation & Error Handling Tests", () => {
       expect(response.body.message).toBe("Invalid value for field: _id");
     });
   });
+
+  describe("Book Listing, Advanced Filters & Pagination", () => {
+    it("should return raw array of books for backward compatibility when pagination is not requested", async () => {
+      const mockBooks = [
+        { title: "Book 1", price: 10, category: "classic" },
+        { title: "Book 2", price: 20, category: "academic" }
+      ];
+      Book.find.mockReturnValue({
+        populate: jest.fn().mockReturnThis(),
+        sort: jest.fn().mockResolvedValue(mockBooks)
+      });
+
+      const response = await request(app).get("/api/books");
+
+      expect(response.status).toBe(200);
+      expect(Array.isArray(response.body)).toBe(true);
+      expect(response.body.length).toBe(2);
+      expect(response.body[0].title).toBe("Book 1");
+    });
+
+    it("should return paginated and filtered metadata when paginate=true is provided", async () => {
+      const mockBooks = [
+        { title: "Book 1", price: 10, category: "classic" }
+      ];
+      Book.countDocuments = jest.fn().mockResolvedValue(10);
+      Book.find.mockReturnValue({
+        populate: jest.fn().mockReturnThis(),
+        sort: jest.fn().mockReturnThis(),
+        skip: jest.fn().mockReturnThis(),
+        limit: jest.fn().mockResolvedValue(mockBooks)
+      });
+
+      const response = await request(app)
+        .get("/api/books?paginate=true&page=2&limit=5&category=classic");
+
+      expect(response.status).toBe(200);
+      expect(response.body.success).toBe(true);
+      expect(response.body.data).toHaveLength(1);
+      expect(response.body.pagination).toEqual({
+        total: 10,
+        limit: 5,
+        page: 2,
+        pages: 2,
+        hasNext: false,
+        hasPrev: true
+      });
+    });
+
+    it("should sort books based on sort parameter", async () => {
+      const mockBooks = [
+        { title: "Book 1", price: 10 },
+        { title: "Book 2", price: 20 }
+      ];
+      Book.countDocuments = jest.fn().mockResolvedValue(2);
+      const mockSort = jest.fn().mockReturnThis();
+      Book.find.mockReturnValue({
+        populate: jest.fn().mockReturnThis(),
+        sort: mockSort,
+        skip: jest.fn().mockReturnThis(),
+        limit: jest.fn().mockResolvedValue(mockBooks)
+      });
+
+      const response = await request(app).get("/api/books?paginate=true&sort=price_asc");
+
+      expect(response.status).toBe(200);
+      expect(mockSort).toHaveBeenCalledWith({ price: 1 });
+    });
+  });
 });

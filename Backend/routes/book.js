@@ -9,6 +9,7 @@ const asyncHandler = require("../utils/asyncHandler");
 const AppError = require("../utils/AppError");
 const validate = require("../middleware/validate");
 const { bookSchema } = require("../utils/validators/bookValidator");
+const { buildBookQuery } = require("../utils/queryBuilder");
 
 // Regex escaping helper to prevent ReDoS
 const escapeRegex = (string) => {
@@ -56,36 +57,84 @@ router.post("/", verifyToken, upload.array("images", 5), validate(bookSchema), a
 
 
 // ==============================
-// 📚 GET ALL BOOKS
+// 📚 GET ALL BOOKS (WITH ADVANCED FILTERS, SORTING, PAGINATION)
 // ==============================
 router.get("/", asyncHandler(async (req, res, next) => {
-  const books = await Book.find({ isSold: false })
-    .populate("seller", "name email phone")
-    .sort({ createdAt: -1 });
-  res.json(books);
+  const { filter, sort, page, limit, skip } = buildBookQuery(req.query);
+
+  const shouldPaginate = req.query.page || req.query.limit || req.query.paginate === "true";
+
+  if (shouldPaginate) {
+    const total = await Book.countDocuments(filter);
+    const books = await Book.find(filter)
+      .populate("seller", "name email phone")
+      .sort(sort)
+      .skip(skip)
+      .limit(limit);
+
+    const pages = Math.ceil(total / limit);
+
+    return res.json({
+      success: true,
+      data: books,
+      pagination: {
+        total,
+        limit,
+        page,
+        pages,
+        hasNext: page < pages,
+        hasPrev: page > 1
+      }
+    });
+  } else {
+    // Legacy support: return raw array for backward compatibility
+    const books = await Book.find({ isSold: false })
+      .populate("seller", "name email phone")
+      .sort({ createdAt: -1 });
+    return res.json(books);
+  }
 }));
 
 
 // ==============================
-// 🔍 GLOBAL SEARCH
+// 🔍 GLOBAL SEARCH (WITH PAGINATION AND ADVANCED FILTERS SUPPORT)
 // ==============================
 router.get("/search", asyncHandler(async (req, res, next) => {
   const { q } = req.query;
   if (!q) return res.json([]);
 
-  const escapedQ = escapeRegex(q);
+  const { filter, sort, page, limit, skip } = buildBookQuery(req.query);
+  const shouldPaginate = req.query.page || req.query.limit || req.query.paginate === "true";
 
-  const books = await Book.find({
-    isSold: false,
-    $or: [
-      { title: { $regex: escapedQ, $options: "i" } },
-      { author: { $regex: escapedQ, $options: "i" } },
-      { category: { $regex: escapedQ, $options: "i" } },
-      { location: { $regex: escapedQ, $options: "i" } }
-    ]
-  }).populate("seller", "name email phone");
+  if (shouldPaginate) {
+    const total = await Book.countDocuments(filter);
+    const books = await Book.find(filter)
+      .populate("seller", "name email phone")
+      .sort(sort)
+      .skip(skip)
+      .limit(limit);
 
-  res.json(books);
+    const pages = Math.ceil(total / limit);
+
+    return res.json({
+      success: true,
+      data: books,
+      pagination: {
+        total,
+        limit,
+        page,
+        pages,
+        hasNext: page < pages,
+        hasPrev: page > 1
+      }
+    });
+  } else {
+    // Legacy support: return raw array
+    const books = await Book.find(filter)
+      .populate("seller", "name email phone")
+      .sort(sort);
+    return res.json(books);
+  }
 }));
 
 
