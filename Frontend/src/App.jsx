@@ -14,6 +14,7 @@ import Register from "./pages/Register";
 import Account from "./pages/Account";
 import EditBook from "./pages/EditBook";
 import Wishlist from "./pages/Wishlist";
+import Chat from "./pages/Chat";
 import Footer from "./components/Footer";
 
 
@@ -37,6 +38,7 @@ function App() {
         <Route path="/account" element={<Account />} />
         <Route path="/edit-book/:id" element={<EditBook />} />
         <Route path="/wishlist" element={<Wishlist />} />
+        <Route path="/chat" element={<Chat />} />
       </Routes>
 
       <Footer />

@@ -1,11 +1,49 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "../styles/navbar.css";
 import { Link, useNavigate } from "react-router-dom";
+import API from "../api/api";
 
 function Navbar() {
   const token = localStorage.getItem("token");
   const [search, setSearch] = useState("");
+  const [unreadCount, setUnreadCount] = useState(0);
   const navigate = useNavigate();
+
+  // JWT Decoder Helper
+  const parseJwt = (token) => {
+    try {
+      return JSON.parse(atob(token.split('.')[1]));
+    } catch (e) {
+      return null;
+    }
+  };
+
+  useEffect(() => {
+    if (!token) return;
+
+    const fetchUnreadCount = () => {
+      API.get("/api/conversations")
+        .then((res) => {
+          const decoded = parseJwt(token);
+          const userId = decoded?.id;
+          if (userId) {
+            const count = res.data.reduce((sum, conv) => {
+              return sum + (conv.unreadCounts?.[userId] || 0);
+            }, 0);
+            setUnreadCount(count);
+          }
+        })
+        .catch((err) => {
+          console.error("Error fetching unread count:", err);
+        });
+    };
+
+    fetchUnreadCount();
+    // Poll every 15 seconds to keep the unread count updated in the navbar
+    const interval = setInterval(fetchUnreadCount, 15000);
+
+    return () => clearInterval(interval);
+  }, [token]);
 
   // LOGOUT
   const handleLogout = () => {
@@ -75,6 +113,10 @@ function Navbar() {
 
           {token ? (
             <>
+              <Link to="/chat" style={{ position: "relative" }}>
+                Messages
+                {unreadCount > 0 && <span className="nav-unread-badge">{unreadCount}</span>}
+              </Link>
               <Link to="/account">My Account</Link>
               <button onClick={handleLogout} className="logout-btn">
                 Logout
