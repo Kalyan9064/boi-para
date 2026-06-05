@@ -12,6 +12,12 @@ function Login() {
 
   const navigate = useNavigate();
 
+
+  if (localStorage.getItem("token")) {
+    window.location.href = "/";
+    return null;
+  }
+
   const handleChange = (e) => {
     setForm({
       ...form,
@@ -63,6 +69,34 @@ function Login() {
           <button className="auth-btn">Login</button>
 
         </form>
+
+        <div style={{ marginTop: "15px" }}>
+          <div style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "10px",
+            margin: "15px 0",
+            color: "#aaa",
+            fontSize: "13px"
+          }}>
+            <div style={{ flex: 1, height: "1px", background: "#ddd" }}></div>
+            <span>or</span>
+            <div style={{ flex: 1, height: "1px", background: "#ddd" }}></div>
+          </div>
+          <button
+            type="button"
+            className="google-btn"
+            onClick={() => window.location.href = "http://localhost:5000/api/auth/google"}
+          >
+            <img
+              src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+              alt="Google"
+              width="18"
+              height="18"
+            />
+            Continue with Google
+          </button>
+        </div>
 
         <div className="auth-link">
           <p>

@@ -4,6 +4,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 
+const passport = require("./config/passport");
 const authRoutes = require("./routes/auth");
 const bookRoutes = require("./routes/book");
 const bookRequestRoutes = require("./routes/bookRequest");
@@ -37,6 +38,7 @@ app.use(cors({
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(passport.initialize());
 
 /* =========================
    ROUTES
