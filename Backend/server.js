@@ -7,6 +7,7 @@ const cors = require("cors");
 const authRoutes = require("./routes/auth");
 const bookRoutes = require("./routes/book");
 const bookRequestRoutes = require("./routes/bookRequest");
+const reviewRoutes = require("./routes/review");
 
 const app = express();
 
@@ -45,6 +46,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/api/auth", authRoutes);
 app.use("/api/books", bookRoutes);
 app.use("/api/requests", bookRequestRoutes);
+app.use("/api/reviews", reviewRoutes);
 
 /* =========================
    STATIC FILES
