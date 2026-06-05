@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import API from "../api/api";
+import toast from "../utils/toast";
 import "../styles/bookdetail.css";
 
 function BookDetail() {
@@ -118,7 +119,7 @@ function BookDetail() {
                 const phone = book.seller?.phone;
 
                 if (!phone) {
-                  alert("Phone not available");
+                  toast.error("Phone not available");
                   return;
                 }
 

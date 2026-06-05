@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import "../styles/sell.css";
 import API from "../api/api";
+import toast from "../utils/toast";
 
 function SellBook() {
 
@@ -57,12 +58,15 @@ function SellBook() {
 
     const token = localStorage.getItem("token");
     if (!token) {
-      alert("Please login first");
+      toast.warning("Please login first");
+      setTimeout(() => {
+        window.location.href = "/login";
+      }, 1000);
       return;
     }
 
     if (images.length === 0) {
-      alert("Please upload at least 1 image");
+      toast.error("Please upload at least 1 image");
       return;
     }
 
@@ -86,12 +90,14 @@ function SellBook() {
         }
       });
 
-      alert("Book added successfully! 🎉");
-      window.location.href = "/";
+      toast.success("Book added successfully! 🎉");
+      setTimeout(() => {
+        window.location.href = "/";
+      }, 1000);
 
     } catch (error) {
       console.log("ERROR:", error.response?.data || error.message);
-      alert(error.response?.data?.message || "Error adding book");
+      toast.error(error.response?.data?.message || "Error adding book");
     }
   };
 

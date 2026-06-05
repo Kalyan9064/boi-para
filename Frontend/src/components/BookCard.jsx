@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import API from "../api/api";
+import toast from "../utils/toast";
 import "../styles/bookcard.css";
 import { useState, useEffect } from "react";
 
@@ -63,7 +64,7 @@ function BookCard({ book }) {
       const token = localStorage.getItem("token");
 
       if (!token) {
-        alert("Please login first");
+        toast.warning("Please login first");
         return;
       }
 
@@ -76,6 +77,7 @@ function BookCard({ book }) {
         });
 
         setIsSaved(false);
+        toast.info("Removed from Wishlist");
 
       } else {
         // ADD
@@ -90,10 +92,11 @@ function BookCard({ book }) {
         );
 
         setIsSaved(true);
+        toast.success("Added to Wishlist! ❤️");
       }
 
     } catch (err) {
-      alert("Error updating wishlist");
+      toast.error("Error updating wishlist");
     }
   };
 

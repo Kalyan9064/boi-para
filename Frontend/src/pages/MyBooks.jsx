@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import API from "../api/api";
+import toast from "../utils/toast";
 
 function MyBooks() {
 
@@ -27,13 +28,13 @@ function MyBooks() {
         }
       });
 
-      alert("Book deleted");
+      toast.success("Book deleted successfully!");
 
       // remove from UI
       setBooks(books.filter(book => book._id !== id));
 
     } catch (error) {
-      alert("Error deleting book");
+      toast.error("Error deleting book");
     }
   };
 
