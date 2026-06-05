@@ -3,10 +3,8 @@
   position: sticky;
   top: 0;
   z-index: 100;
-
   background: #F3EFE6;
   padding: 12px 0;
-
   border-bottom: 1px solid #ddd;
 }
 
@@ -15,7 +13,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  flex-wrap: wrap;   /* 🔥 important for mobile */
+  position: relative;
 }
 
 /* ================= LOGO ================= */
@@ -28,6 +26,9 @@
   text-decoration: none;
   color: inherit;
   font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 /* ================= SEARCH BOX ================= */
@@ -40,14 +41,11 @@
 .search-box input {
   width: 100%;
   padding: 10px 12px 10px 38px;
-
   border-radius: 25px;
   border: 1px solid #ccc;
-
   outline: none;
   font-size: 14px;
   background: #fff;
-
   transition: all 0.2s ease;
 }
 
@@ -73,21 +71,18 @@
   align-items: center;
 }
 
-.nav-links a {
+.nav-links a,
+.sell-link {
   text-decoration: none;
   color: #333;
   font-size: 14px;
   transition: 0.2s ease;
-}
-
-.nav-links a:hover {
-  color: #000;
-}
-
-/* ================= SELL ================= */
-.sell-link {
   cursor: pointer;
-  font-size: 14px;
+}
+
+.nav-links a:hover,
+.sell-link:hover {
+  color: #6366f1;
 }
 
 /* ================= LOGOUT ================= */
@@ -97,10 +92,25 @@
   cursor: pointer;
   font-size: 14px;
   color: #333;
+  transition: 0.2s ease;
 }
 
 .logout-btn:hover {
-  color: #000;
+  color: #6366f1;
+}
+
+/* ================= HAMBURGER ================= */
+.hamburger {
+  display: none;
+  font-size: 30px;
+  cursor: pointer;
+  color: #333;
+  z-index: 1001;
+  transition: 0.2s ease;
+}
+
+.hamburger:hover {
+  color: #6366f1;
 }
 
 /* ================================================= */
@@ -110,26 +120,70 @@
 @media (max-width: 768px) {
 
   .navbar-container {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 10px;
+    padding: 0 16px;
   }
 
-  /* 🔍 SEARCH FULL WIDTH */
+  /* SHOW HAMBURGER */
+  .hamburger {
+    display: block;
+  }
+
+  /* MOBILE MENU */
+  .nav-links {
+    position: absolute;
+    top: 75px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 92%;
+
+    background: #ffffff;
+    border-radius: 20px;
+
+    box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+
+    padding: 24px 20px;
+    z-index: 1000;
+
+    animation: slideDown 0.3s ease;
+  }
+
+  .nav-links.active {
+    display: flex;
+  }
+
+  /* SEARCH FULL WIDTH */
   .search-box {
     width: 100%;
+    max-width: 320px;
   }
 
-  /* 📚 NAV LINKS WRAP */
-  .nav-links {
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 12px;
+  .search-box input {
+    background: #f8f8f8;
+    border: 1px solid #e5e5e5;
   }
 
   .nav-links a,
-  .logout-btn,
-  .sell-link {
-    font-size: 13px;
+  .sell-link,
+  .logout-btn {
+    font-size: 16px;
+    color: #222;
+  }
+}
+
+/* ================= ANIMATION ================= */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-15px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
   }
 }
