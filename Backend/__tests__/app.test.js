@@ -3,6 +3,8 @@ const app = require("../server");
 const User = require("../models/User");
 const Book = require("../models/Book");
 const Review = require("../models/Review");
+const Conversation = require("../models/Conversation");
+const Message = require("../models/Message");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 
@@ -10,6 +12,8 @@ const bcrypt = require("bcryptjs");
 jest.mock("../models/User");
 jest.mock("../models/Book");
 jest.mock("../models/Review");
+jest.mock("../models/Conversation");
+jest.mock("../models/Message");
 jest.mock("../utils/sendEmail", () => jest.fn().mockResolvedValue(true));
 jest.mock("jsonwebtoken");
 jest.mock("bcryptjs");
@@ -451,6 +455,195 @@ describe("BoiPara Backend - Validation & Error Handling Tests", () => {
 
       expect(response.status).toBe(400);
       expect(response.body.message).toContain("cannot submit a review for yourself");
+    });
+  });
+
+  describe("Real-Time Chat & Messaging Endpoints", () => {
+    beforeEach(() => {
+      jwt.verify.mockReturnValue({ id: "000000000000000000000002" });
+    });
+
+    describe("POST /api/conversations", () => {
+      it("should fail validation if sellerId is missing or invalid", async () => {
+        const response = await request(app)
+          .post("/api/conversations")
+          .set("Authorization", "Bearer mockToken")
+          .send({});
+
+        expect(response.status).toBe(400);
+        expect(response.body.message).toBe("Validation failed");
+      });
+
+      it("should prevent starting a conversation with oneself", async () => {
+        const response = await request(app)
+          .post("/api/conversations")
+          .set("Authorization", "Bearer mockToken")
+          .send({ sellerId: "000000000000000000000002" });
+
+        expect(response.status).toBe(400);
+        expect(response.body.message).toContain("cannot start a conversation with yourself");
+      });
+
+      it("should return existing conversation if it exists", async () => {
+        User.findById.mockResolvedValue({ _id: "000000000000000000000001", name: "Seller" });
+        const mockConv = {
+          _id: "convId123",
+          participants: ["000000000000000000000002", "000000000000000000000001"],
+          unreadCounts: new Map([["000000000000000000000002", 0], ["000000000000000000000001", 0]])
+        };
+        Conversation.findOne.mockResolvedValue(mockConv);
+
+        const populate2 = jest.fn().mockResolvedValue(mockConv);
+        const populate1 = jest.fn().mockReturnValue({ populate: populate2 });
+        Conversation.findById.mockReturnValue({ populate: populate1 });
+
+        const response = await request(app)
+          .post("/api/conversations")
+          .set("Authorization", "Bearer mockToken")
+          .send({ sellerId: "000000000000000000000001" });
+
+        expect(response.status).toBe(200);
+        expect(response.body._id).toBe("convId123");
+      });
+    });
+
+    describe("GET /api/conversations", () => {
+      it("should retrieve list of conversations for current user", async () => {
+        const mockList = [
+          { _id: "convId123", participants: ["000000000000000000000002", "000000000000000000000001"] }
+        ];
+
+        const sortMock = jest.fn().mockResolvedValue(mockList);
+        const populate2 = jest.fn().mockReturnValue({ sort: sortMock });
+        const populate1 = jest.fn().mockReturnValue({ populate: populate2 });
+        Conversation.find.mockReturnValue({ populate: populate1 });
+
+        const response = await request(app)
+          .get("/api/conversations")
+          .set("Authorization", "Bearer mockToken");
+
+        expect(response.status).toBe(200);
+        expect(Array.isArray(response.body)).toBe(true);
+        expect(response.body[0]._id).toBe("convId123");
+      });
+    });
+
+    describe("PUT /api/conversations/:id/read", () => {
+      it("should fail if user is not a participant of conversation", async () => {
+        const mockConv = {
+          _id: "convId123",
+          participants: ["000000000000000000000003", "000000000000000000000004"]
+        };
+        Conversation.findById.mockResolvedValue(mockConv);
+
+        const response = await request(app)
+          .put("/api/conversations/convId123/read")
+          .set("Authorization", "Bearer mockToken");
+
+        expect(response.status).toBe(403);
+        expect(response.body.message).toContain("not authorized");
+      });
+
+      it("should reset unread count and update other sender's messages to read", async () => {
+        const mockMap = {
+          set: jest.fn(),
+          get: jest.fn()
+        };
+        const mockConv = {
+          _id: "convId123",
+          participants: ["000000000000000000000002", "000000000000000000000001"],
+          unreadCounts: mockMap,
+          save: jest.fn().mockResolvedValue(true)
+        };
+        Conversation.findById.mockResolvedValue(mockConv);
+        Message.updateMany.mockResolvedValue({ modifiedCount: 2 });
+
+        const response = await request(app)
+          .put("/api/conversations/convId123/read")
+          .set("Authorization", "Bearer mockToken");
+
+        expect(response.status).toBe(200);
+        expect(mockMap.set).toHaveBeenCalledWith("000000000000000000000002", 0);
+        expect(mockConv.save).toHaveBeenCalled();
+        expect(Message.updateMany).toHaveBeenCalled();
+      });
+    });
+
+    describe("POST /api/messages", () => {
+      it("should fail if sender is not part of conversation", async () => {
+        const mockConv = {
+          _id: "000000000000000000000123",
+          participants: ["000000000000000000000003", "000000000000000000000004"]
+        };
+        Conversation.findById.mockResolvedValue(mockConv);
+
+        const response = await request(app)
+          .post("/api/messages")
+          .set("Authorization", "Bearer mockToken")
+          .send({ conversationId: "000000000000000000000123", text: "Hello!" });
+
+        expect(response.status).toBe(403);
+        expect(response.body.message).toContain("not authorized");
+      });
+
+      it("should successfully send message and update unread count for receiver", async () => {
+        const mockMap = {
+          get: jest.fn().mockReturnValue(1),
+          set: jest.fn()
+        };
+        const mockConv = {
+          _id: "000000000000000000000123",
+          participants: ["000000000000000000000002", "000000000000000000000001"],
+          unreadCounts: mockMap,
+          save: jest.fn().mockResolvedValue(true)
+        };
+        Conversation.findById.mockResolvedValue(mockConv);
+        
+        const mockMsg = {
+          _id: "msgId123",
+          conversation: "000000000000000000000123",
+          sender: "000000000000000000000002",
+          text: "Hello!"
+        };
+        Message.prototype.save = jest.fn().mockResolvedValue(true);
+        Message.findById.mockReturnValue({
+          populate: jest.fn().mockResolvedValue(mockMsg)
+        });
+
+        const response = await request(app)
+          .post("/api/messages")
+          .set("Authorization", "Bearer mockToken")
+          .send({ conversationId: "000000000000000000000123", text: "Hello!" });
+
+        expect(response.status).toBe(201);
+        expect(mockMap.set).toHaveBeenCalledWith("000000000000000000000001", 2);
+        expect(mockConv.save).toHaveBeenCalled();
+      });
+    });
+
+    describe("GET /api/messages/:conversationId", () => {
+      it("should return message list if user is participant", async () => {
+        const mockConv = {
+          _id: "convId123",
+          participants: ["000000000000000000000002", "000000000000000000000001"]
+        };
+        Conversation.findById.mockResolvedValue(mockConv);
+        const mockMsgs = [
+          { text: "Hello!", sender: { _id: "000000000000000000000002" } }
+        ];
+        
+        const sortMock = jest.fn().mockResolvedValue(mockMsgs);
+        const populateMock = jest.fn().mockReturnValue({ sort: sortMock });
+        Message.find.mockReturnValue({ populate: populateMock });
+
+        const response = await request(app)
+          .get("/api/messages/convId123")
+          .set("Authorization", "Bearer mockToken");
+
+        expect(response.status).toBe(200);
+        expect(response.body).toHaveLength(1);
+        expect(response.body[0].text).toBe("Hello!");
+      });
     });
   });
 });

@@ -269,20 +269,28 @@ function BookDetail() {
 
             <button
               onClick={() => {
-                const phone = book.seller?.phone;
-
-                if (!phone) {
-                  alert("Phone not available");
+                if (!token) {
+                  alert("Please login first to chat with the seller.");
+                  navigate("/login");
                   return;
                 }
 
-                const message = `Hi, I'm interested in your book: ${book.title}`;
-                const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+                if (currentUser && currentUser._id === book.seller?._id) {
+                  alert("You cannot start a conversation with yourself (this is your book listing).");
+                  return;
+                }
 
-                window.open(url, "_blank");
+                API.post("/api/conversations", { sellerId: book.seller._id })
+                  .then((res) => {
+                    navigate("/chat", { state: { selectConversation: res.data } });
+                  })
+                  .catch((err) => {
+                    console.error("Error initiating conversation:", err);
+                    alert(err.response?.data?.message || "Failed to start conversation.");
+                  });
               }}
               style={{
-                background: "#25D366",
+                background: "#6366f1",
                 color: "#fff",
                 border: "none",
                 padding: "10px 15px",
