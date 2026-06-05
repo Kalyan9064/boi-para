@@ -33,6 +33,9 @@ const buildBookQuery = (queryParams) => {
   if (queryParams.location) {
     filter.location = { $regex: escapeRegex(queryParams.location), $options: "i" };
   }
+  if (queryParams.seller) {
+    filter.seller = queryParams.seller;
+  }
 
   // 3. Price Range Filter
   if (queryParams.minPrice !== undefined || queryParams.maxPrice !== undefined) {
