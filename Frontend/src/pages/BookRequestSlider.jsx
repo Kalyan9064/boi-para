@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../api/api";
+import toast from "../utils/toast";
 import "../styles/bookrequestslider.css";
 
 function BookRequestSlider() {
@@ -72,13 +73,13 @@ function BookRequestSlider() {
                 }
             });
 
-            alert("Book requested successfully!");
+            toast.success("Book requested successfully!");
             setShowModal(false);
             setForm({ bookName: "", author: "", message: "", location: "" });
             fetchRequests(); // refresh slider
 
         } catch (error) {
-            alert(error.response?.data?.message || "Error submitting request");
+            toast.error(error.response?.data?.message || "Error submitting request");
         }
     };
 
@@ -168,7 +169,7 @@ function BookRequestSlider() {
                                     const phone = request.requestedBy?.phone;
 
                                     if (!phone) {
-                                        alert("Phone not available");
+                                        toast.error("Phone not available");
                                         return;
                                     }
 
@@ -194,7 +195,10 @@ function BookRequestSlider() {
                     onClick={() => {
                         const token = localStorage.getItem("token");
                         if (!token) {
-                            alert("Please login first");
+                            toast.warning("Please login first");
+                            setTimeout(() => {
+                                navigate("/login");
+                            }, 1000);
                             return;
                         }
                         setShowModal(true);  // ← only this

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import API from "../api/api";
+import toast from "../utils/toast";
 import "../styles/account.css";
 
 function Account() {
@@ -17,8 +18,10 @@ function Account() {
     const token = localStorage.getItem("token");
 
     if (!token) {
-      alert("Please login first");
-      window.location.href = "/login";
+      toast.warning("Please login first");
+      setTimeout(() => {
+        window.location.href = "/login";
+      }, 1000);
       return;
     }
 
@@ -66,10 +69,12 @@ function Account() {
       }));
 
       setLoading(false);
+      toast.success("Profile picture updated!");
 
     } catch (err) {
       console.log(err);
       setLoading(false);
+      toast.error("Error uploading profile picture");
     }
   };
 
@@ -84,10 +89,11 @@ function Account() {
       await API.delete(`/api/books/${id}`);
 
       setMyBooks(prev => prev.filter(book => book._id !== id));
+      toast.success("Book deleted successfully!");
 
     } catch (err) {
       console.log(err);
-      alert("Error deleting book");
+      toast.error("Error deleting book");
     }
   };
 

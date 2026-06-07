@@ -1,5 +1,6 @@
 import "../styles/hero.css";
 import { Link, useNavigate } from "react-router-dom";
+import toast from "../utils/toast";
 
 function Hero() {
 
@@ -9,8 +10,10 @@ function Hero() {
     const token = localStorage.getItem("token");
 
     if (!token) {
-      alert("Please login first");
-      navigate("/login");
+      toast.warning("Please login first");
+      setTimeout(() => {
+        navigate("/login");
+      }, 1000);
     } else {
       navigate("/sell-book");
     }

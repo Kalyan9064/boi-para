@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import "../styles/navbar.css";
 import { Link, useNavigate } from "react-router-dom";
+import toast from "../utils/toast";
 
 function Navbar() {
   const token = localStorage.getItem("token");
@@ -62,8 +63,10 @@ function Navbar() {
                 if (token) {
                   window.location.href = "/sell-book";
                 } else {
-                  alert("Please login first");
-                  window.location.href = "/login";
+                  toast.warning("Please login first");
+                  setTimeout(() => {
+                    window.location.href = "/login";
+                  }, 1000);
                 }
               }}
             >
