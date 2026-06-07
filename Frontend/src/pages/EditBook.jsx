@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import API from "../api/api";
+import toast from "../utils/toast";
 
 function EditBook() {
 
@@ -34,29 +35,31 @@ function EditBook() {
 
   // update book
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  try {
-    const token = localStorage.getItem("token");
+    try {
+      const token = localStorage.getItem("token");
 
-    await API.put(
-      `/api/books/${id}`,
-      form,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`
+      await API.put(
+        `/api/books/${id}`,
+        form,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
         }
-      }
-    );
+      );
 
-    alert("Book updated successfully");
-    navigate("/account");
+      toast.success("Book updated successfully!");
+      setTimeout(() => {
+        navigate("/account");
+      }, 1000);
 
-  } catch (err) {
-    console.log(err.response?.data || err.message);
-    alert("Error updating book");
-  }
-};
+    } catch (err) {
+      console.log(err.response?.data || err.message);
+      toast.error("Error updating book");
+    }
+  };
 
   return (
     <div className="container mt-4">

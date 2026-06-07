@@ -1,6 +1,6 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
-import ScrollToHash from "./components/ScrollToHash";
+import ScrollToTop from "./components/ScrollToTop";
 import Home from "./pages/Home";
 import VerifyEmail from "./pages/VerifyEmail";
 import Login from "./pages/Login";
@@ -22,7 +22,7 @@ function App() {
     <>
     <Navbar />
     
-     <ScrollToHash />
+     <ScrollToTop />
 
       <Routes>
         <Route path="/" element={<Home />} />

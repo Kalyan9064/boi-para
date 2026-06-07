@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import API from "../api/api";
+import toast from "../utils/toast";
 import "../styles/auth.css";
 
 function Register() {
@@ -28,6 +29,7 @@ function Register() {
     // 🔴 Validation
     if (!form.name || !form.email || !form.password || !form.phone) {
       setError("All fields are required!");
+      toast.error("All fields are required!");
       return;
     }
 
@@ -35,12 +37,14 @@ function Register() {
     const emailRegex = /\S+@\S+\.\S+/;
     if (!emailRegex.test(form.email)) {
       setError("Invalid email format");
+      toast.error("Invalid email format");
       return;
     }
 
     // Phone validation
     if (form.phone.length < 10) {
       setError("Phone must be at least 10 digits");
+      toast.error("Phone must be at least 10 digits");
       return;
     }
 
@@ -48,11 +52,15 @@ function Register() {
       setError("");
       await API.post("/api/auth/register", form);
 
-      alert("Registered successfully");
-      navigate("/login");
+      toast.success("Registered successfully!");
+      setTimeout(() => {
+        navigate("/login");
+      }, 1000);
 
     } catch (err) {
-     setError(err.response?.data?.message || "Error");
+      const errMsg = err.response?.data?.message || "Registration failed";
+      setError(errMsg);
+      toast.error(errMsg);
     }
   };
 

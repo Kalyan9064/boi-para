@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import API from "../api/api";
 import { Link } from "react-router-dom";
+import toast from "../utils/toast";
 import "../styles/wishlist.css";   // ✅ CSS import
 
 function Wishlist() {
@@ -38,9 +39,10 @@ function Wishlist() {
       setBooks(prev =>
         prev.filter(book => book._id !== bookId)
       );
+      toast.info("Removed from Wishlist");
 
     } catch (err) {
-      alert("Error removing book");
+      toast.error("Error removing book");
     }
   };
 

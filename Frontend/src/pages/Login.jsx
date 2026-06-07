@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import API from "../api/api";
+import toast from "../utils/toast";
 import "../styles/auth.css";
 
 function Login() {
@@ -27,11 +28,13 @@ function Login() {
 
       localStorage.setItem("token", res.data.token);
 
-      alert("Login successful");
-      window.location.href = "/";
+      toast.success("Login successful");
+      setTimeout(() => {
+        window.location.href = "/";
+      }, 1000);
 
     } catch (err) {
-      alert(err.response?.data?.message || "Login failed");
+      toast.error(err.response?.data?.message || "Login failed");
     }
   };
 
