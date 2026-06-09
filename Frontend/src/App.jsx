@@ -15,11 +15,12 @@ import Account from "./pages/Account";
 import EditBook from "./pages/EditBook";
 import Wishlist from "./pages/Wishlist";
 import Footer from "./components/Footer";
+import { WishlistProvider } from "./context/WishlistContext";
 
 
 function App() {
   return (
-    <>
+    <WishlistProvider>
     <Navbar />
     
      <ScrollToTop />
@@ -40,7 +41,7 @@ function App() {
       </Routes>
 
       <Footer />
-    </>
+    </WishlistProvider>
   );
 }
 

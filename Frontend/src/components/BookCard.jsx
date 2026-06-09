@@ -1,10 +1,10 @@
 import { Link } from "react-router-dom";
-import API from "../api/api";
-import toast from "../utils/toast";
 import "../styles/bookcard.css";
-import { useState, useEffect } from "react";
+import { useWishlist } from "../context/WishlistContext";
 
 function BookCard({ book }) {
+
+  const { isSaved, toggleWishlist } = useWishlist();
 
   // ==============================
   // 🕒 TIME FUNCTION
@@ -27,77 +27,12 @@ function BookCard({ book }) {
   };
 
   // ==============================
-  // ❤️ STATE
-  // ==============================
-  const [isSaved, setIsSaved] = useState(false);
-
-  // ==============================
-  // 🔍 CHECK IF SAVED
-  // ==============================
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-
-    if (!token) return;
-
-    API.get("/api/auth/wishlist", {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    })
-      .then(res => {
-        const exists = res.data.some(
-          item => item._id === book._id
-        );
-        setIsSaved(exists);
-      })
-      .catch(() => {});
-  }, [book._id]);
-
-  // ==============================
   // ❤️ TOGGLE WISHLIST
   // ==============================
-  const handleWishlist = async (e) => {
+  const handleWishlist = (e) => {
     e.preventDefault();
     e.stopPropagation();
-
-    try {
-      const token = localStorage.getItem("token");
-
-      if (!token) {
-        toast.warning("Please login first");
-        return;
-      }
-
-      if (isSaved) {
-        // REMOVE
-        await API.delete(`/api/auth/wishlist/${book._id}`, {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        });
-
-        setIsSaved(false);
-        toast.info("Removed from Wishlist");
-
-      } else {
-        // ADD
-        await API.post(
-          `/api/auth/wishlist/${book._id}`,
-          {},
-          {
-            headers: {
-              Authorization: `Bearer ${token}`
-            }
-          }
-        );
-
-        setIsSaved(true);
-        toast.success("Added to Wishlist! ❤️");
-      }
-
-    } catch (err) {
-      toast.error("Error updating wishlist");
-    }
+    toggleWishlist(book._id);
   };
 
   return (
@@ -127,7 +62,7 @@ function BookCard({ book }) {
               onClick={handleWishlist}
               className="wishlist-btn"
             >
-              {isSaved ? "❤️" : "🤍"}
+              {isSaved(book._id) ? "❤️" : "🤍"}
             </button>
 
           </div>
