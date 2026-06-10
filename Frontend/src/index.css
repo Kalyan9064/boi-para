@@ -13,3 +13,117 @@ body {
 h1, h2, h3, h4 {
   font-family: 'Playfair Display', serif;
 }
+
+/* ==========================================
+   Responsive Typography (index.css)
+========================================== */
+
+/* Base smooth scaling */
+html {
+  font-size: 16px;
+}
+
+/* Large Desktop (default styles already apply above 992px) */
+
+
+/* Small Laptop: 768px – 992px */
+@media screen and (max-width: 992px) {
+
+  html {
+    font-size: 15px;
+  }
+
+  h1 {
+    font-size: 2.6rem;
+    line-height: 1.2;
+  }
+
+  h2 {
+    font-size: 2rem;
+    line-height: 1.25;
+  }
+
+  h3 {
+    font-size: 1.5rem;
+  }
+}
+
+
+/* Tablet: 481px – 767px */
+@media screen and (max-width: 767px) {
+
+  html {
+    font-size: 14px;
+  }
+
+  body {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+
+  h1 {
+    font-size: 2.2rem;
+    line-height: 1.2;
+  }
+
+  h2 {
+    font-size: 1.8rem;
+  }
+
+  h3 {
+    font-size: 1.4rem;
+  }
+
+  p {
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+}
+
+
+/* Mobile: 320px – 480px */
+@media screen and (max-width: 480px) {
+
+  html {
+    font-size: 13px;
+  }
+
+  body {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+
+  h1 {
+    font-size: 1.9rem;
+    line-height: 1.2;
+  }
+
+  h2 {
+    font-size: 1.6rem;
+  }
+
+  h3 {
+    font-size: 1.25rem;
+  }
+
+  p {
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+}
+
+
+/* Extra improvements */
+img,
+video,
+svg,
+canvas {
+  max-width: 100%;
+  height: auto;
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
