@@ -2,209 +2,267 @@ const express = require("express");
 const router = express.Router();
 const Book = require("../models/Book");
 const verifyToken = require("../middleware/authMiddleware");
-const { cloudinary, upload } = require("../config/cloudinary"); // ✅ NEW
+const { cloudinary, upload } = require("../config/cloudinary");
+
+// Centralized Validation & Error Helpers
+const asyncHandler = require("../utils/asyncHandler");
+const AppError = require("../utils/AppError");
+const validate = require("../middleware/validate");
+const { bookSchema } = require("../utils/validators/bookValidator");
+const { buildBookQuery } = require("../utils/queryBuilder");
+
+// Regex escaping helper to prevent ReDoS
+const escapeRegex = (string) => {
+  return string.replace(/[-\/\\^$*+?.()|[\]{}]/g, "\\$&");
+};
+
 
 // ==============================
 // ➕ ADD BOOK
 // ==============================
-router.post("/", verifyToken, upload.array("images", 5), async (req, res) => {
+router.post("/", verifyToken, upload.array("images", 5), validate(bookSchema), asyncHandler(async (req, res, next) => {
+  const { title, author, price, category, condition, description, location } = req.body;
+
+  const newBook = new Book({
+    title,
+    author,
+    price,
+    category,
+    condition,
+    description,
+    location,
+    images: req.files ? req.files.map(f => f.path) : [],
+    seller: req.userId,
+    isSold: false
+  });
+
   try {
-    const { title, author, price, category, condition, description, location } = req.body;
-
-    const newBook = new Book({
-      title,
-      author,
-      price,
-      category,
-      condition,
-      description,
-      location,
-      images: req.files ? req.files.map(f => f.path) : [], // ✅ array of URLs
-      seller: req.userId,
-      isSold: false
-    });
-
     await newBook.save();
     res.status(201).json({ message: "Book added successfully", book: newBook });
-
-  } catch (error) {
-    console.log("REAL ERROR:", error);
-    res.status(500).json({ message: error.message });
+  } catch (saveError) {
+    // Clean up uploaded files since DB save failed
+    if (req.files) {
+      try {
+        for (const file of req.files) {
+          const publicId = file.filename || `boipara-books/${file.path.split("/").pop().split(".")[0]}`;
+          await cloudinary.uploader.destroy(publicId);
+        }
+      } catch (cleanupErr) {
+        console.error("Cloudinary cleanup error during save failure:", cleanupErr.message);
+      }
+    }
+    throw saveError;
   }
-});
+}));
+
 
 // ==============================
-// 📚 GET ALL BOOKS
+// 📚 GET ALL BOOKS (WITH ADVANCED FILTERS, SORTING, PAGINATION)
 // ==============================
-router.get("/", async (req, res) => {
-  try {
+router.get("/", asyncHandler(async (req, res, next) => {
+  const { filter, sort, page, limit, skip } = buildBookQuery(req.query);
+
+  const shouldPaginate = req.query.page || req.query.limit || req.query.paginate === "true";
+
+  if (shouldPaginate) {
+    const total = await Book.countDocuments(filter);
+    const books = await Book.find(filter)
+      .populate("seller", "name email phone")
+      .sort(sort)
+      .skip(skip)
+      .limit(limit);
+
+    const pages = Math.ceil(total / limit);
+
+    return res.json({
+      success: true,
+      data: books,
+      pagination: {
+        total,
+        limit,
+        page,
+        pages,
+        hasNext: page < pages,
+        hasPrev: page > 1
+      }
+    });
+  } else {
+    // Legacy support: return raw array for backward compatibility
     const books = await Book.find({ isSold: false })
       .populate("seller", "name email phone")
       .sort({ createdAt: -1 });
-    res.json(books);
-  } catch (error) {
-    res.status(500).json({ message: "Server error" });
+    return res.json(books);
   }
-});
+}));
+
 
 // ==============================
-// 🔍 GLOBAL SEARCH
+// 🔍 GLOBAL SEARCH (WITH PAGINATION AND ADVANCED FILTERS SUPPORT)
 // ==============================
-router.get("/search", async (req, res) => {
-  try {
-    const { q } = req.query;
-    if (!q) return res.json([]);
+router.get("/search", asyncHandler(async (req, res, next) => {
+  const { q } = req.query;
+  if (!q) return res.json([]);
 
-    const books = await Book.find({
-      isSold: false,
-      $or: [
-        { title: { $regex: q, $options: "i" } },
-        { author: { $regex: q, $options: "i" } },
-        { category: { $regex: q, $options: "i" } },
-        { location: { $regex: q, $options: "i" } }
-      ]
-    }).populate("seller", "name email phone");
+  const { filter, sort, page, limit, skip } = buildBookQuery(req.query);
+  const shouldPaginate = req.query.page || req.query.limit || req.query.paginate === "true";
 
-    res.json(books);
-  } catch (error) {
-    res.status(500).json({ message: "Server error" });
+  if (shouldPaginate) {
+    const total = await Book.countDocuments(filter);
+    const books = await Book.find(filter)
+      .populate("seller", "name email phone")
+      .sort(sort)
+      .skip(skip)
+      .limit(limit);
+
+    const pages = Math.ceil(total / limit);
+
+    return res.json({
+      success: true,
+      data: books,
+      pagination: {
+        total,
+        limit,
+        page,
+        pages,
+        hasNext: page < pages,
+        hasPrev: page > 1
+      }
+    });
+  } else {
+    // Legacy support: return raw array
+    const books = await Book.find(filter)
+      .populate("seller", "name email phone")
+      .sort(sort);
+    return res.json(books);
   }
-});
+}));
+
 
 // ==============================
 // 👤 GET MY BOOKS
 // ==============================
-router.get("/my-books", verifyToken, async (req, res) => {
-  try {
-    const books = await Book.find({ seller: req.userId })
-      .populate("seller", "name email phone");
-    res.json(books);
-  } catch (error) {
-    res.status(500).json({ message: "Server error" });
-  }
-});
+router.get("/my-books", verifyToken, asyncHandler(async (req, res, next) => {
+  const books = await Book.find({ seller: req.userId })
+    .populate("seller", "name email phone");
+  res.json(books);
+}));
+
 
 // ==============================
 // 👤 GET BOOKS BY SELLER
 // ==============================
-router.get("/seller/:sellerId", async (req, res) => {
-  try {
-    const books = await Book.find({ seller: req.params.sellerId, isSold: false })
-      .populate("seller", "name email phone")
-      .sort({ createdAt: -1 });
-    res.json(books);
-  } catch (error) {
-    res.status(500).json({ message: "Server error" });
-  }
-});
+router.get("/seller/:sellerId", asyncHandler(async (req, res, next) => {
+  const books = await Book.find({ seller: req.params.sellerId, isSold: false })
+    .populate("seller", "name email phone")
+    .sort({ createdAt: -1 });
+  res.json(books);
+}));
+
 
 // ==============================
 // ✏️ UPDATE BOOK
 // ==============================
-router.put("/:id", verifyToken, async (req, res) => {
-  try {
-    const book = await Book.findById(req.params.id);
+router.put("/:id", verifyToken, validate(bookSchema), asyncHandler(async (req, res, next) => {
+  const book = await Book.findById(req.params.id);
 
-    if (!book) return res.status(404).json({ message: "Book not found" });
-    if (book.seller.toString() !== req.userId) return res.status(403).json({ message: "Not authorized" });
-
-    const { title, author, price, category, condition, description, location } = req.body;
-
-    book.title = title;
-    book.author = author;
-    book.price = price;
-    book.category = category;
-    book.condition = condition;
-    book.description = description;
-    book.location = location;
-
-    await book.save();
-    res.json({ message: "Book updated successfully", book });
-
-  } catch (error) {
-    res.status(500).json({ message: "Server error" });
+  if (!book) {
+    throw new AppError("Book not found", 404);
   }
-});
+  if (book.seller.toString() !== req.userId) {
+    throw new AppError("Not authorized", 403);
+  }
+
+  const { title, author, price, category, condition, description, location } = req.body;
+
+  book.title = title;
+  book.author = author;
+  book.price = price;
+  book.category = category;
+  book.condition = condition;
+  book.description = description;
+  book.location = location;
+
+  await book.save();
+  res.json({ message: "Book updated successfully", book });
+}));
+
 
 // ==============================
 // 📖 GET SINGLE BOOK
 // ==============================
-router.get("/:id", async (req, res) => {
-  try {
-    const book = await Book.findById(req.params.id)
-      .populate("seller", "name email phone");
+router.get("/:id", asyncHandler(async (req, res, next) => {
+  const book = await Book.findById(req.params.id)
+    .populate("seller", "name email phone");
 
-    if (!book) return res.status(404).json({ message: "Book not found" });
-    res.json(book);
-  } catch (error) {
-    res.status(500).json({ message: "Server error" });
+  if (!book) {
+    throw new AppError("Book not found", 404);
   }
-});
+  res.json(book);
+}));
+
 
 // ==============================
 // 🗑 DELETE BOOK
 // ==============================
-router.delete("/:id", verifyToken, async (req, res) => {
-  try {
-    const book = await Book.findById(req.params.id);
+router.delete("/:id", verifyToken, asyncHandler(async (req, res, next) => {
+  const book = await Book.findById(req.params.id);
 
-    if (!book) return res.status(404).json({ message: "Book not found" });
-    if (book.seller.toString() !== req.userId) return res.status(403).json({ message: "Not authorized" });
+  if (!book) {
+    throw new AppError("Book not found", 404);
+  }
+  if (book.seller.toString() !== req.userId) {
+    throw new AppError("Not authorized", 403);
+  }
 
-    // ✅ Delete ALL images from Cloudinary
-    if (book.images && book.images.length > 0) {
-      for (const imageUrl of book.images) {
-        try {
-          const urlParts = imageUrl.split("/");
-          const filename = urlParts[urlParts.length - 1].split(".")[0];
-          const publicId = `boipara-books/${filename}`;
-          await cloudinary.uploader.destroy(publicId);
-        } catch (cloudErr) {
-          console.log("Cloudinary delete error:", cloudErr.message);
-        }
+  // ✅ Delete ALL images from Cloudinary
+  if (book.images && book.images.length > 0) {
+    for (const imageUrl of book.images) {
+      try {
+        const urlParts = imageUrl.split("/");
+        const filename = urlParts[urlParts.length - 1].split(".")[0];
+        const publicId = `boipara-books/${filename}`;
+        await cloudinary.uploader.destroy(publicId);
+      } catch (cloudErr) {
+        console.log("Cloudinary delete error:", cloudErr.message);
       }
     }
-
-    await book.deleteOne();
-    res.json({ message: "Book deleted successfully" });
-
-  } catch (error) {
-    res.status(500).json({ message: "Server error" });
   }
-});
+
+  await book.deleteOne();
+  res.json({ message: "Book deleted successfully" });
+}));
+
 
 // ==============================
 // 🟢 MARK AS SOLD
 // ==============================
-router.put("/:id/sold", verifyToken, async (req, res) => {
-  try {
-    const book = await Book.findById(req.params.id);
+router.put("/:id/sold", verifyToken, asyncHandler(async (req, res, next) => {
+  const book = await Book.findById(req.params.id);
 
-    if (!book) return res.status(404).json({ message: "Book not found" });
-    if (book.seller.toString() !== req.userId) return res.status(403).json({ message: "Not authorized" });
-
-    book.isSold = true;
-    await book.save();
-    res.json({ message: "Book marked as sold" });
-
-  } catch (error) {
-    res.status(500).json({ message: "Server error" });
+  if (!book) {
+    throw new AppError("Book not found", 404);
   }
-});
+  if (book.seller.toString() !== req.userId) {
+    throw new AppError("Not authorized", 403);
+  }
+
+  book.isSold = true;
+  await book.save();
+  res.json({ message: "Book marked as sold" });
+}));
+
 
 // ==============================
 // 📍 GET BOOKS BY LOCATION
 // ==============================
-router.get("/location/:city", async (req, res) => {
-  try {
-    const books = await Book.find({
-      location: { $regex: req.params.city, $options: "i" },
-      isSold: false
-    }).populate("seller", "name email phone");
-    res.json(books);
-  } catch (error) {
-    res.status(500).json({ message: "Server error" });
-  }
-});
+router.get("/location/:city", asyncHandler(async (req, res, next) => {
+  const escapedCity = escapeRegex(req.params.city);
+  const books = await Book.find({
+    location: { $regex: escapedCity, $options: "i" },
+    isSold: false
+  }).populate("seller", "name email phone");
+  res.json(books);
+}));
+
 
 module.exports = router;
