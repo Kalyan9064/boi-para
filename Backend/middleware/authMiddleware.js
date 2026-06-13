@@ -1,17 +1,22 @@
 const jwt = require("jsonwebtoken");
+const AppError = require("../utils/AppError");
 
 const verifyToken = (req, res, next) => {
+  // 1️⃣ Get Authorization header
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader) {
+    return next(new AppError("No token provided", 401));
+  }
+
+  // 2️⃣ Extract token (remove "Bearer ")
+  const parts = authHeader.split(" ");
+  if (parts.length !== 2 || parts[0] !== "Bearer") {
+    return next(new AppError("Invalid token format", 401));
+  }
+  const token = parts[1];
+
   try {
-    // 1️⃣ Get Authorization header
-    const authHeader = req.headers.authorization;
-
-    if (!authHeader) {
-      return res.status(401).json({ message: "No token provided" });
-    }
-
-    // 2️⃣ Extract token (remove "Bearer ")
-    const token = authHeader.split(" ")[1];
-
     // 3️⃣ Verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
@@ -22,7 +27,7 @@ const verifyToken = (req, res, next) => {
     next();
 
   } catch (error) {
-    return res.status(401).json({ message: "Invalid token" });
+    return next(new AppError("Invalid token", 401));
   }
 };
 
