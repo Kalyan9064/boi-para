@@ -153,7 +153,8 @@
 
 /* WHATSAPP BUTTON */
 .whatsapp-btn {
-  background: #25D366;
+  /* background: #25D366; */
+  background: #58290c;
   color: white;
   border: none;
   border-radius: 10px;
@@ -167,7 +168,7 @@
 }
 
 .whatsapp-btn:hover {
-  background: #1da851;
+  background: #281205;
 }
 
 /* ================= BOTTOM ================= */
@@ -177,7 +178,7 @@
 }
 
 .request-book-btn {
-  background: #8b5a2b;
+  background: #e7750b;
   color: white;
   border: none;
   border-radius: 8px;

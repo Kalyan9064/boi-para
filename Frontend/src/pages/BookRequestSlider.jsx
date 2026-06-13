@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import API from "../api/api";
 import toast from "../utils/toast";
 import "../styles/bookrequestslider.css";
+import AllRequests from "./AllRequests";
 
 function BookRequestSlider() {
 
@@ -31,6 +32,10 @@ function BookRequestSlider() {
             console.log("Error fetching requests:", error);
         }
     };
+
+    const handleAllRequests = () => {
+        navigate("/book-requests")
+    }
 
     // ==============================
     // TIME AGO FUNCTION
@@ -98,24 +103,7 @@ function BookRequestSlider() {
                 <h2 className="slider-heading">
                     Community Book Requests
                 </h2>
-                <button
-                    className="see-all-btn"
-                    onClick={() => {
-                        //navigate("/all-requests")
-                          setShowModal(true);  // ← only this
-                    }}
-
-
-                    //  className="request-book-btn"
-                    // onClick={() => {
-                    //     const token = localStorage.getItem("token");
-                    //     if (!token) {
-                    //         alert("Please login first");
-                    //         return;
-                    //     }
-                    //     setShowModal(true);  // ← only this
-                    // }}
-                >
+                <button className="see-all-btn" onClick={handleAllRequests}>
                     See All →
                 </button>
             </div>

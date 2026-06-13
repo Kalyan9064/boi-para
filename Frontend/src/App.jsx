@@ -15,6 +15,7 @@ import Account from "./pages/Account";
 import EditBook from "./pages/EditBook";
 import Wishlist from "./pages/Wishlist";
 import Footer from "./components/Footer";
+import AllRequests from "./pages/AllRequests";
 
 
 function App() {
@@ -37,6 +38,7 @@ function App() {
         <Route path="/account" element={<Account />} />
         <Route path="/edit-book/:id" element={<EditBook />} />
         <Route path="/wishlist" element={<Wishlist />} />
+        <Route path="/book-requests" element={<AllRequests />} />
       </Routes>
 
       <Footer />
