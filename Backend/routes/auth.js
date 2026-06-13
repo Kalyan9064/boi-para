@@ -7,6 +7,12 @@ const multer = require("multer");
 const crypto = require("crypto");
 const sendVerificationEmail = require("../utils/sendEmail");
 
+// Centralized Validation & Error Helpers
+const asyncHandler = require("../utils/asyncHandler");
+const AppError = require("../utils/AppError");
+const validate = require("../middleware/validate");
+const { registerSchema, loginSchema } = require("../utils/validators/authValidator");
+
 const router = express.Router();
 
 
@@ -28,156 +34,112 @@ const upload = multer({ storage });
 // ==============================
 // 🧾 REGISTER
 // ==============================
-router.post("/register", async (req, res) => {
-  try {
-    const { name, email, password, phone } = req.body;
+router.post("/register", validate(registerSchema), asyncHandler(async (req, res, next) => {
+  const { name, email, password, phone } = req.body;
 
-    const existingUser = await User.findOne({ email });
+  const existingUser = await User.findOne({ email });
 
-    if (existingUser) {
-      return res.status(400).json({
-       message: "User already exists, please login"
-
-      });
-    }
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    const verificationToken =
-      crypto.randomBytes(32).toString("hex");
-
-    const newUser = new User({
-      name,
-      email,
-      password: hashedPassword,
-      phone,
-      verificationToken
-    });
-
-    await newUser.save();
-
-    await sendVerificationEmail(
-      email,
-      verificationToken
-    );
-
-    res.status(201).json({
-      message:
-        "Registered successfully. Please verify your email."
-    });
-
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({
-      message: "Server error"
-    });
+  if (existingUser) {
+    throw new AppError("User already exists, please login", 400);
   }
-});
+
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  const verificationToken = crypto.randomBytes(32).toString("hex");
+
+  const newUser = new User({
+    name,
+    email,
+    password: hashedPassword,
+    phone,
+    verificationToken
+  });
+
+  await newUser.save();
+
+  await sendVerificationEmail(email, verificationToken);
+
+  res.status(201).json({
+    message: "Registered successfully. Please verify your email."
+  });
+}));
 
 
 // ==============================
 // 📧 VERIFY EMAIL
 // ==============================
-router.get("/verify-email/:token", async (req, res) => {
-  try {
-    const user = await User.findOne({
-      verificationToken: req.params.token
-    });
+router.get("/verify-email/:token", asyncHandler(async (req, res, next) => {
+  const user = await User.findOne({
+    verificationToken: req.params.token
+  });
 
-    if (!user) {
-      return res.status(400).send("Invalid verification token");
-    }
-
-    user.isVerified = true;
-    user.verificationToken = null;
-
-    await user.save();
-
-    const token = jwt.sign(
-      { id: user._id },
-      process.env.JWT_SECRET,
-      { expiresIn: "1d" }
-    );
-
-    res.json({
-      message: "Email verified successfully",
-      token
-    });
-
-  } catch (error) {
-    res.status(500).send("Server error");
+  if (!user) {
+    throw new AppError("Invalid verification token", 400);
   }
-});
+
+  user.isVerified = true;
+  user.verificationToken = null;
+
+  await user.save();
+
+  const token = jwt.sign(
+    { id: user._id },
+    process.env.JWT_SECRET,
+    { expiresIn: "1d" }
+  );
+
+  res.json({
+    message: "Email verified successfully",
+    token
+  });
+}));
 
 
 // ==============================
 // 🔐 LOGIN
 // ==============================
-router.post("/login", async (req, res) => {
-  try {
-    const { email, password } = req.body;
+router.post("/login", validate(loginSchema), asyncHandler(async (req, res, next) => {
+  const { email, password } = req.body;
 
-    const user = await User.findOne({ email });
+  const user = await User.findOne({ email });
 
-    if (!user) {
-      return res.status(400).json({
-        message: "User not found"
-      });
-    }
-
-    if (!user.isVerified) {
-      return res.status(400).json({
-        message:
-          "Please verify your email before login"
-      });
-    }
-
-    const isMatch = await bcrypt.compare(
-      password,
-      user.password
-    );
-
-    if (!isMatch) {
-      return res.status(400).json({
-        message: "Invalid credentials"
-      });
-    }
-
-    const token = jwt.sign(
-      { id: user._id },
-      process.env.JWT_SECRET,
-      { expiresIn: "1d" }
-    );
-
-    res.status(200).json({
-      message: "Login successful",
-      token
-    });
-
-  } catch (error) {
-    res.status(500).json({
-      message: "Server error"
-    });
+  if (!user) {
+    throw new AppError("User not found", 400);
   }
-});
+
+  if (!user.isVerified) {
+    throw new AppError("Please verify your email before login", 400);
+  }
+
+  const isMatch = await bcrypt.compare(password, user.password);
+
+  if (!isMatch) {
+    throw new AppError("Invalid credentials", 400);
+  }
+
+  const token = jwt.sign(
+    { id: user._id },
+    process.env.JWT_SECRET,
+    { expiresIn: "1d" }
+  );
+
+  res.status(200).json({
+    message: "Login successful",
+    token
+  });
+}));
 
 
 // ==============================
 // 👤 GET PROFILE
 // ==============================
-router.get("/profile", verifyToken, async (req, res) => {
-  try {
-    const user = await User.findById(req.userId)
-      .select("-password");
-
-    res.json(user);
-
-  } catch (error) {
-    res.status(500).json({
-      message: "Server error"
-    });
+router.get("/profile", verifyToken, asyncHandler(async (req, res, next) => {
+  const user = await User.findById(req.userId).select("-password");
+  if (!user) {
+    throw new AppError("User not found", 404);
   }
-});
+  res.json(user);
+}));
 
 
 // ==============================
@@ -187,89 +149,76 @@ router.post(
   "/upload-profile",
   verifyToken,
   upload.single("image"),
-  async (req, res) => {
-    try {
-      const user = await User.findById(req.userId);
-
-      if (!user) {
-        return res.status(404).json({
-          message: "User not found"
-        });
-      }
-
-      user.profileImage = req.file.filename;
-
-      await user.save();
-
-      res.json({
-        message: "Profile image updated",
-        image: user.profileImage
-      });
-
-    } catch (error) {
-      res.status(500).json({
-        message: "Server error"
-      });
+  asyncHandler(async (req, res, next) => {
+    if (!req.file) {
+      throw new AppError("Please upload an image file", 400);
     }
-  }
+
+    const user = await User.findById(req.userId);
+
+    if (!user) {
+      throw new AppError("User not found", 404);
+    }
+
+    user.profileImage = req.file.filename;
+
+    await user.save();
+
+    res.json({
+      message: "Profile image updated",
+      image: user.profileImage
+    });
+  })
 );
 
 
 // ==============================
 // ❤️ ADD TO WISHLIST
 // ==============================
-router.post("/wishlist/:bookId", verifyToken, async (req, res) => {
-  try {
-    const user = await User.findById(req.userId);
-
-    if (!user.savedBooks.includes(req.params.bookId)) {
-      user.savedBooks.push(req.params.bookId);
-      await user.save();
-    }
-
-    res.json({ message: "Added to wishlist" });
-
-  } catch (error) {
-    res.status(500).json({ message: "Server error" });
+router.post("/wishlist/:bookId", verifyToken, asyncHandler(async (req, res, next) => {
+  const user = await User.findById(req.userId);
+  if (!user) {
+    throw new AppError("User not found", 404);
   }
-});
+
+  if (!user.savedBooks.includes(req.params.bookId)) {
+    user.savedBooks.push(req.params.bookId);
+    await user.save();
+  }
+
+  res.json({ message: "Added to wishlist" });
+}));
 
 
 // ==============================
 // 💔 REMOVE FROM WISHLIST
 // ==============================
-router.delete("/wishlist/:bookId", verifyToken, async (req, res) => {
-  try {
-    const user = await User.findById(req.userId);
-
-    user.savedBooks = user.savedBooks.filter(
-      id => id.toString() !== req.params.bookId
-    );
-
-    await user.save();
-
-    res.json({ message: "Removed from wishlist" });
-
-  } catch (error) {
-    res.status(500).json({ message: "Server error" });
+router.delete("/wishlist/:bookId", verifyToken, asyncHandler(async (req, res, next) => {
+  const user = await User.findById(req.userId);
+  if (!user) {
+    throw new AppError("User not found", 404);
   }
-});
+
+  user.savedBooks = user.savedBooks.filter(
+    id => id.toString() !== req.params.bookId
+  );
+
+  await user.save();
+
+  res.json({ message: "Removed from wishlist" });
+}));
 
 
 // ==============================
 // 📄 GET WISHLIST
 // ==============================
-router.get("/wishlist", verifyToken, async (req, res) => {
-  try {
-    const user = await User.findById(req.userId)
-      .populate("savedBooks");
-
-    res.json(user.savedBooks);
-
-  } catch (error) {
-    res.status(500).json({ message: "Server error" });
+router.get("/wishlist", verifyToken, asyncHandler(async (req, res, next) => {
+  const user = await User.findById(req.userId).populate("savedBooks");
+  if (!user) {
+    throw new AppError("User not found", 404);
   }
-});
+  res.json(user.savedBooks);
+}));
 
 
 module.exports = router;
