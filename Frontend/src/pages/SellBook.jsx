@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import "../styles/sell.css";
 import API from "../api/api";
 import toast from "../utils/toast";
+import Select from "react-select";
 
 function SellBook() {
 
@@ -16,7 +17,8 @@ function SellBook() {
   });
 
   const [images, setImages] = useState([]);         // actual File objects
-  const [previews, setPreviews] = useState([]);     // preview URLs for display
+  const [previews, setPreviews] = useState([]);
+  const [loading, setLoading] = useState(false);    // preview URLs for display
 
   // ==============================
   // HANDLE TEXT INPUTS
@@ -101,6 +103,53 @@ function SellBook() {
     }
   };
 
+  const categories = [
+    "Academic & Textbooks",
+    "Competitive Exam Books",
+    "Programming & Technology",
+    "Fiction",
+    "Romance",
+    "Mystery & Thriller",
+    "Fantasy",
+    "Self-Help",
+    "Business & Finance",
+    "Science",
+    "Biography & Autobiography",
+    "Bengali Books",
+    "Hindi Books",
+    "Children's Books",
+    "Manga & Comics"
+  ];
+
+  const categoryOptions = categories.map((category) => ({
+    value: category,
+    label: category,
+  }));
+
+  const generateDescription = async () => {
+    try {
+      setLoading(true);
+
+      const res = await API.post("/api/ai/generate-description", {
+        title: form.title,
+        author: form.author,
+        category: form.category,
+        condition: form.condition,
+      });
+
+      setForm(prev => ({
+        ...prev,
+        description: res.data.description,
+      }));
+
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to generate description");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="sell-container">
 
@@ -120,7 +169,7 @@ function SellBook() {
           <input
             type="file"
             accept="image/*"
-            multiple                        
+            multiple
             onChange={handleImageChange}
             style={{ marginTop: "10px" }}
           />
@@ -183,13 +232,40 @@ function SellBook() {
         />
 
         <label className="input-label">Category</label>
-        <select name="category" className="form-control" onChange={handleChange}>
-          <option value="">Select Category</option>
-          <option value="literature">Literature</option>
-          <option value="academic">Academic</option>
-          <option value="classic">Classic</option>
-          <option value="fiction">Fiction</option>
-        </select>
+
+        <Select
+          options={categoryOptions}
+          value={
+            form.category
+              ? {
+                value: form.category,
+                label: form.category,
+              }
+              : null
+          }
+          onChange={(selected) =>
+            setForm({
+              ...form,
+              category: selected.value,
+            })
+          }
+          placeholder="Select Category..."
+          isSearchable
+          maxMenuHeight={200}
+          menuPortalTarget={document.body}
+          styles={{
+            menuPortal: (base) => ({
+              ...base,
+              zIndex: 9999,
+            }),
+            control: (base) => ({
+              ...base,
+              minHeight: "50px",
+              borderRadius: "12px",
+              borderColor: "#d6c5b8",
+            }),
+          }}
+        />
 
         <label className="input-label">Condition</label>
         <select name="condition" className="form-control" onChange={handleChange}>
@@ -200,11 +276,32 @@ function SellBook() {
           <option>Fair</option>
         </select>
 
-        <label className="input-label">Description</label>
+        {/* <label className="input-label">Description</label>
         <textarea
           name="description"
           placeholder="Describe the book..."
           className="form-control"
+          onChange={handleChange}
+        /> */}
+
+        <div className="description-header">
+          <label className="input-label">Description</label>
+
+          <button
+            type="button"
+            className="ai-generate-btn"
+            onClick={generateDescription}
+            disabled={loading}
+          >
+            {loading ? "✨ Generating..." : "✨ Generate with AI"}
+          </button>
+        </div>
+
+        <textarea
+          name="description"
+          placeholder="Describe the book..."
+          className="form-control"
+          value={form.description}
           onChange={handleChange}
         />
 
