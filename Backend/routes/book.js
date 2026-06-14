@@ -19,7 +19,7 @@ router.post("/", verifyToken, upload.array("images", 5), async (req, res) => {
       condition,
       description,
       location,
-      images: req.files ? req.files.map(f => f.path) : [], // ✅ array of URLs
+      images: req.files ? req.files.map(f => f.secure_url) : [],
       seller: req.userId,
       isSold: false
     });
