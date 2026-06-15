@@ -39,11 +39,11 @@ function Home() {
   return (
     <div>
 
-      {/*  HERO */}
       <Hero />
-      <HowItWorks />
+
       <CategorySection />
-      {/*  MAIN CONTENT */}
+
+            {/*  MAIN CONTENT */}
       <div className="container mt-5">
 
         <h2>Freshly Listed</h2>
@@ -67,13 +67,12 @@ function Home() {
 
         {/*  BOOK GRID */}
         <div className="row">
-          {books.slice(0, 12).map(book => (
+          {books.slice(0, 8).map(book => (
             <BookCard key={book._id} book={book} />
           ))}
         </div>
-      </div>
 
-      <div className="slider-bottom">
+        <div className="slider-bottom">
               <button
         className="request-book-btn"
         onClick={() => {
@@ -83,6 +82,11 @@ function Home() {
         Browse All Books →
       </button>
       </div>
+      <br></br>
+      <br></br>
+      </div>
+
+      <HowItWorks />
 
       <BookRequestSlider />
       
