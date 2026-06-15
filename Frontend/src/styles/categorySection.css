@@ -1,0 +1,179 @@
+/* =========================
+   CATEGORY SECTION
+========================= */
+
+.category-section {
+    max-width: 1200px;
+    margin: 70px auto;
+    padding: 0 20px;
+}
+
+.category-header {
+    text-align: center;
+    margin-bottom: 45px;
+}
+
+.category-header h2 {
+    font-size: 2rem;
+    color: #4b2414;
+    margin-bottom: 10px;
+    font-family: "Playfair Display", serif;
+}
+
+.category-header p {
+    color: #7b6b63;
+    font-size: 15px;
+    max-width: 500px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
+/* =========================
+   GRID
+========================= */
+
+.category-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 35px 25px;
+}
+
+/* =========================
+   CARD
+========================= */
+
+.category-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+
+    cursor: pointer;
+
+    transition: transform 0.3s ease;
+}
+
+.category-card:hover {
+    transform: translateY(-6px);
+}
+
+/* =========================
+   ICON CONTAINER
+========================= */
+
+.category-icon {
+    width: 160px;
+    height: 160px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    transition: all 0.3s ease;
+}
+
+/* =========================
+   IMAGE
+========================= */
+
+.category-image {
+    width: 100%;
+    height: 100%;
+
+    object-fit: contain;
+
+    transition: transform 0.3s ease,
+                filter 0.3s ease;
+
+    filter: drop-shadow(
+        0 8px 18px rgba(0, 0, 0, 0.12)
+    );
+}
+
+.category-card:hover .category-image {
+    transform: scale(1.08);
+
+    filter:
+        drop-shadow(
+            0 12px 25px rgba(183, 122, 61, 0.25)
+        );
+}
+
+/* =========================
+   TEXT
+========================= */
+
+.category-card p {
+    margin-top: 15px;
+
+    font-size: 15px;
+    font-weight: 600;
+
+    color: #4b2414;
+
+    line-height: 1.35;
+
+    transition: color 0.3s ease;
+}
+
+.category-card:hover p {
+    color: #b77a3d;
+}
+
+/* =========================
+   TABLET
+========================= */
+
+@media (max-width: 992px) {
+
+    .category-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+
+    .category-icon {
+        width: 110px;
+        height: 110px;
+    }
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 768px) {
+
+    .category-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 30px 20px;
+    }
+
+    .category-icon {
+        width: 95px;
+        height: 95px;
+    }
+
+    .category-card p {
+        font-size: 14px;
+    }
+}
+
+/* =========================
+   SMALL MOBILE
+========================= */
+
+@media (max-width: 480px) {
+
+    .category-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 25px 15px;
+    }
+
+    .category-icon {
+        width: 90px;
+        height: 90px;
+    }
+
+    .category-card p {
+        font-size: 13px;
+    }
+}

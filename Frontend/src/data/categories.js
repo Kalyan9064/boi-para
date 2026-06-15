@@ -1,0 +1,92 @@
+export const categories = [
+  {
+    name: "Academic & Textbooks",
+    display: "Academic",
+    icon: "📚",
+    image: "/categories/academic.png",
+  },
+  {
+    name: "Competitive Exam Books",
+    display: "Competitive",
+    icon: "📝",
+    image: "/categories/competitive.png",
+  },
+  {
+    name: "Programming & Technology",
+    display: "Programming",
+    icon: "💻",
+    image: "/categories/programming.png",
+  },
+  {
+    name: "Fiction",
+    display: "Fiction",
+    icon: "📖",
+    image: "/categories/fiction.png",
+  },
+  {
+    name: "Romance",
+    display: "Romance",
+    icon: "💕",
+    image: "/categories/romance.png",
+  },
+  {
+    name: "Mystery & Thriller",
+    display: "Mystery",
+    icon: "🔍",
+    image: "/categories/mystery.png",
+  },
+  {
+    name: "Fantasy",
+    display: "Fantasy",
+    icon: "🐉",
+    image: "/categories/fantasy.png",
+  },
+  {
+    name: "Self-Help",
+    display: "Self-Help",
+    icon: "🌱",
+    image: "/categories/selfhelp.png",
+  },
+  {
+    name: "Business & Finance",
+    display: "Business",
+    icon: "💼",
+    image: "/categories/business.png",
+  },
+  {
+    name: "Science",
+    display: "Science",
+    icon: "🧪",
+    image: "/categories/science.png",
+  },
+  {
+    name: "Biography & Autobiography",
+    display: "Biography",
+    icon: "✍️",
+    image: "/categories/biography.png",
+  },
+  {
+    name: "Bengali Books",
+    display: "Bengali",
+    icon: "অ",
+    image: "/categories/bengali.png",
+  },
+  {
+    name: "Hindi Books",
+    display: "Hindi",
+    icon: "ह",
+    image: "/categories/hindi.png",
+  },
+  {
+    name: "Children's Books",
+    display: "Kids",
+    icon: "🧸",
+    image: "/categories/children.png",
+  },
+  {
+    name: "Manga & Comics",
+    display: "Manga",
+    icon: "🎌",
+    image: "/categories/manga.png",
+  },
+];

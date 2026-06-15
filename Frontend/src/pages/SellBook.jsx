@@ -104,21 +104,21 @@ function SellBook() {
   };
 
   const categories = [
-    "Academic & Textbooks",
+    "Academic/Textbooks",
     "Competitive Exam Books",
-    "Programming & Technology",
+    "Programming/Technology",
     "Fiction",
     "Romance",
-    "Mystery & Thriller",
+    "Mystery/Thriller",
     "Fantasy",
     "Self-Help",
-    "Business & Finance",
+    "Business/Finance",
     "Science",
     "Biography & Autobiography",
     "Bengali Books",
     "Hindi Books",
     "Children's Books",
-    "Manga & Comics"
+    "Manga/Comics"
   ];
 
   const categoryOptions = categories.map((category) => ({
