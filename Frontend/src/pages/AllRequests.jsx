@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import API from "../api/api";
 import toast from "../utils/toast";
 import "../styles/allrequests.css"
+import getTimeAgo from "../utils/getTimeAgo";
 
 function AllRequests() {
     const [requests, setRequests] = useState([]);
@@ -12,30 +13,6 @@ function AllRequests() {
             .catch((err) => console.log(err));
     }, []);
 
-    // Time Ago Function
-    const getTimeAgo = (date) => {
-        const now = new Date();
-        const past = new Date(date);
-
-        const diffInSeconds = Math.floor((now - past) / 1000);
-
-        if (diffInSeconds < 60) {
-            return `${diffInSeconds} sec ago`;
-        }
-
-        const diffInMinutes = Math.floor(diffInSeconds / 60);
-        if (diffInMinutes < 60) {
-            return `${diffInMinutes} min ago`;
-        }
-
-        const diffInHours = Math.floor(diffInMinutes / 60);
-        if (diffInHours < 24) {
-            return `${diffInHours} hr ago`;
-        }
-
-        const diffInDays = Math.floor(diffInHours / 24);
-        return `${diffInDays} day${diffInDays > 1 ? "s" : ""} ago`;
-    };
 
     return (
         <div className="all-requests-container">

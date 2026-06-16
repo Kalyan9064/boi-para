@@ -50,22 +50,21 @@ function Footer() {
         <div className="footer-col">
           <h3>Legal</h3>
           <ul>
-            <li><Link>Terms of Service</Link></li>
-            <li><Link>Privacy Policy</Link></li>
-            <li><Link>Safety Guidelines</Link></li>
+            <li><Link to="/terms-of-service">Terms of Service</Link></li>
+            <li><Link to="/privacy-policy">Privacy Policy</Link></li>
+            <li><Link to="/safety-guidelines">Safety Guidelines</Link></li>
           </ul>
         </div>
 
         {/* CONTACT (NEW) */}
         <div className="footer-col">
           <h3>Contact Us</h3>
-          <p>Email:</p>
-          <a
+          <p>Email:<a
             href="mailto:support.boipara@gmail.com"
             className="contact-email"
           >
             boipara.support@gmail.com
-          </a>
+          </a></p> 
         </div>
 
       </div>

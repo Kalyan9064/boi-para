@@ -1,0 +1,138 @@
+.policy-page {
+    min-height: 100vh;
+    background: linear-gradient(180deg, #f8fafc 0%, #eef4ff 100%);
+    padding: 50px 20px;
+}
+
+.policy-wrapper {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+/* Hero Section */
+.policy-hero {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.policy-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 20px;
+    border-radius: 50%;
+    background: #2563eb;
+    color: white;
+    font-size: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 10px 25px rgba(37, 99, 235, 0.25);
+}
+
+.policy-hero h1 {
+    font-size: 2.5rem;
+    color: #0f172a;
+    margin-bottom: 12px;
+}
+
+.policy-hero p {
+    max-width: 650px;
+    margin: 0 auto;
+    color: #64748b;
+    line-height: 1.8;
+    font-size: 1.05rem;
+}
+
+/* Cards */
+.policy-card {
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 30px;
+    margin-bottom: 25px;
+    box-shadow: 0 8px 30px rgba(15, 23, 42, 0.08);
+    transition: all 0.3s ease;
+}
+
+.policy-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(15, 23, 42, 0.12);
+}
+
+.policy-card h2 {
+    color: #2563eb;
+    margin-bottom: 25px;
+    font-size: 1.6rem;
+    border-bottom: 2px solid #dbeafe;
+    padding-bottom: 12px;
+}
+
+.guideline-item {
+    margin-bottom: 25px;
+}
+
+.guideline-item:last-child {
+    margin-bottom: 0;
+}
+
+.guideline-item h3 {
+    color: #1e293b;
+    margin-bottom: 8px;
+    font-size: 1.1rem;
+}
+
+.guideline-item p {
+    color: #64748b;
+    line-height: 1.8;
+}
+
+/* Prohibited Activities */
+.prohibited-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.prohibited-list li {
+    padding: 15px 18px;
+    margin-bottom: 12px;
+    border-radius: 12px;
+    background: #fff7f7;
+    border-left: 4px solid #ef4444;
+    color: #475569;
+}
+
+.prohibited-list li:last-child {
+    margin-bottom: 0;
+}
+
+/* Disclaimer */
+.disclaimer {
+    background: #eff6ff;
+    border-left: 5px solid #2563eb;
+}
+
+.disclaimer p {
+    color: #475569;
+    line-height: 1.8;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .policy-page {
+        padding: 30px 15px;
+    }
+
+    .policy-card {
+        padding: 22px;
+    }
+
+    .policy-hero h1 {
+        font-size: 2rem;
+    }
+
+    .policy-icon {
+        width: 65px;
+        height: 65px;
+        font-size: 30px;
+    }
+}

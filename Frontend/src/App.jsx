@@ -16,6 +16,9 @@ import EditBook from "./pages/EditBook";
 import Wishlist from "./pages/Wishlist";
 import Footer from "./components/Footer";
 import AllRequests from "./pages/AllRequests";
+import SafetyGuidelines from "./pages/SafetyGuidelines";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsOfService from "./pages/TermsOfService";
 
 
 function App() {
@@ -39,6 +42,9 @@ function App() {
         <Route path="/edit-book/:id" element={<EditBook />} />
         <Route path="/wishlist" element={<Wishlist />} />
         <Route path="/book-requests" element={<AllRequests />} />
+        <Route path="/safety-guidelines" element={<SafetyGuidelines />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        <Route path="/terms-of-service" element={<TermsOfService />} />
       </Routes>
 
       <Footer />
