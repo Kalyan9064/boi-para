@@ -2,11 +2,14 @@ import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import API from "../api/api";
 import BookCard from "../components/BookCard";
+import BookCardSkeleton from "../components/BookCardSkeleton";
 
 function Browse() {
   const [books, setBooks] = useState([]);
   const [category, setCategory] = useState("");
   const [condition, setCondition] = useState("");
+  const [loading, setLoading] = useState(true);
+
   const location = useLocation();
 
   const categories = [
@@ -27,27 +30,43 @@ function Browse() {
     "Manga & Comics",
   ];
 
+  // Handle category from URL
   useEffect(() => {
-  const params = new URLSearchParams(location.search);
+    const params = new URLSearchParams(location.search);
+    const selectedCategory = params.get("category");
 
-  const selectedCategory = params.get("category");
+    if (selectedCategory) {
+      setCategory(selectedCategory);
+    }
+  }, [location.search]);
 
-  if (selectedCategory) {
-    setCategory(selectedCategory);
-  }
-}, [location.search]);
-
-
+  // Fetch books
   useEffect(() => {
+    setLoading(true);
+
     API.get("/api/books")
-      .then((res) => setBooks(res.data))
-      .catch((err) => console.log(err));
+      .then((res) => {
+        setBooks(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   }, []);
+
+  // Filter books
+  const filteredBooks = books.filter((book) => {
+    return (
+      (category === "" || book.category === category) &&
+      (condition === "" || book.condition === condition)
+    );
+  });
 
   return (
     <div className="container mt-4">
       <div className="row">
-
         {/* LEFT SIDEBAR */}
         <div className="col-md-3">
           <div className="p-3 border rounded">
@@ -148,21 +167,23 @@ function Browse() {
         {/* RIGHT CONTENT */}
         <div className="col-md-9">
           <div className="row">
-            {books
-              .filter((book) => {
-                return (
-                  (category === "" ||
-                    book.category === category) &&
-                  (condition === "" ||
-                    book.condition === condition)
-                );
-              })
-              .map((book) => (
+            {loading ? (
+              [...Array(12)].map((_, index) => (
+                <BookCardSkeleton key={index} />
+              ))
+            ) : (
+              filteredBooks.map((book) => (
                 <BookCard key={book._id} book={book} />
-              ))}
+              ))
+            )}
           </div>
-        </div>
 
+          {!loading && filteredBooks.length === 0 && (
+            <div className="text-center mt-5">
+              <h5>No books found</h5>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

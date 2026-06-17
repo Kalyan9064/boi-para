@@ -1,4 +1,5 @@
 import React from "react";
+import "react-loading-skeleton/dist/skeleton.css";
 import { Routes, Route } from "react-router-dom";
 import ScrollToTop from "./components/ScrollToTop";
 import Home from "./pages/Home";

@@ -9,11 +9,12 @@ import "../styles/home.css";
 import BookRequestSlider from "./BookRequestSlider";
 import { useNavigate } from "react-router-dom";
 import CategorySection from "../components/CategorySection";
+import BookCardSkeleton from "../components/BookCardSkeleton";
 
 function Home() {
 
   const [books, setBooks] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("");
   const [location, setLocation] = useState("");
@@ -43,7 +44,7 @@ function Home() {
 
       <CategorySection />
 
-            {/*  MAIN CONTENT */}
+      {/*  MAIN CONTENT */}
       <div className="container mt-5">
 
         <h2>Freshly Listed</h2>
@@ -51,12 +52,6 @@ function Home() {
           Discover the latest additions to our community library.
         </p>
 
-        {/*  LOADING */}
-        {loading && (
-          <div className="text-center mb-3">
-            <h5>Loading...</h5>
-          </div>
-        )}
 
         {/*  EMPTY */}
         {!loading && books.length === 0 && (
@@ -67,29 +62,35 @@ function Home() {
 
         {/*  BOOK GRID */}
         <div className="row">
-          {books.slice(0, 8).map(book => (
-            <BookCard key={book._id} book={book} />
-          ))}
+          {loading
+            ? [...Array(8)].map((_, index) => (
+              <BookCardSkeleton key={index} />
+            ))
+            : books
+              .slice(0, 8)
+              .map(book => (
+                <BookCard key={book._id} book={book} />
+              ))}
         </div>
 
         <div className="slider-bottom">
-              <button
-        className="request-book-btn"
-        onClick={() => {
-           navigate("/browse");
-        }}
-      >
-        Browse All Books →
-      </button>
-      </div>
-      <br></br>
-      <br></br>
+          <button
+            className="request-book-btn"
+            onClick={() => {
+              navigate("/browse");
+            }}
+          >
+            Browse All Books →
+          </button>
+        </div>
+        <br></br>
+        <br></br>
       </div>
 
       <HowItWorks />
 
       <BookRequestSlider />
-      
+
       {/* Divider Line */}
       <div className="footer-divider"></div>
       {/* <Footer /> */}
