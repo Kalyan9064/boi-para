@@ -258,7 +258,7 @@ B.Tech in Computer Science & Engineering
 
 - 🌐 Live Project: https://boi-para.vercel.app/
 - 💻 GitHub: https://github.com/Kalyan9064
-- 📧 Email: kalyanchakraborty9064@gmail.com
+- 📧 Email: [kalyanchakraborty9064@gmail.com](mailto:kalyanchakraborty9064@gmail.com)
 
 ---
 
