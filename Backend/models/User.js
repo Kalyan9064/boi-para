@@ -42,7 +42,12 @@ const userSchema = new mongoose.Schema({
       type: mongoose.Schema.Types.ObjectId,
       ref: "Book"
     }
-  ]
+  ],
+  location: {
+    latitude: Number,
+    longitude: Number,
+    address: String,
+  },
 
 }, { timestamps: true });
 

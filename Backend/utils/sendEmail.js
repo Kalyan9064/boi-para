@@ -1,13 +1,9 @@
 const axios = require("axios");
 
 const sendVerificationEmail = async (email, token) => {
-  console.log("📧 STEP 1: Function called");
-
   try {
     const verificationLink =
       `${process.env.CLIENT_URL}/verify-email/${token}`;
-
-    console.log("🔗 STEP 2: Link created:", verificationLink);
 
     const response = await axios.post(
       "https://api.brevo.com/v3/smtp/email",
@@ -26,19 +22,23 @@ const sendVerificationEmail = async (email, token) => {
       },
       {
         headers: {
-          "api-key": process.env.EMAIL_PASS,
+          "api-key": process.env.BREVO_API_KEY,
           "Content-Type": "application/json",
         },
       }
     );
 
-    console.log("✅ STEP 3: Email sent");
-    console.log(response.data);
-
+    console.log("Email sent:", response.data);
   } catch (error) {
-    console.log("❌ EMAIL ERROR:");
-    console.log(error.response?.data || error.message);
+  console.log("❌ EMAIL ERROR");
+
+  if (error.response) {
+    console.log("Status:", error.response.status);
+    console.log("Data:", error.response.data);
+  } else {
+    console.log(error.message);
   }
+}
 };
 
 module.exports = sendVerificationEmail;

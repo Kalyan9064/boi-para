@@ -13,6 +13,11 @@ function Register() {
     phone: ""
   });
 
+  const [location, setLocation] = useState({
+    latitude: "",
+    longitude: "",
+  });
+
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
@@ -21,6 +26,22 @@ function Register() {
       ...form,
       [e.target.name]: e.target.value
     });
+  };
+
+  const getCurrentLocation = () => {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setLocation({
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+        });
+
+        toast.success("Location captured!");
+      },
+      () => {
+        toast.error("Please allow location access");
+      }
+    );
   };
 
   const handleSubmit = async (e) => {
@@ -48,9 +69,17 @@ function Register() {
       return;
     }
 
+    if (!location.latitude || !location.longitude) {
+      toast.error("Please select your location");
+      return;
+    }
+
     try {
       setError("");
-      await API.post("/api/auth/register", form);
+      await API.post("/api/auth/register", {
+        ...form,
+        location,
+      });
 
       toast.success("Registered successfully!");
       setTimeout(() => {
@@ -107,6 +136,19 @@ function Register() {
             onChange={handleChange}
             required
           />
+
+          <button
+            type="button"
+            onClick={getCurrentLocation}
+          >
+            📍 Use Current Location
+          </button>
+
+          {location.latitude && (
+            <div style={{ marginTop: "10px" }}>
+              <small>✅ Location captured successfully</small>
+            </div>
+          )}
 
           <button className="auth-btn">Register</button>
 
