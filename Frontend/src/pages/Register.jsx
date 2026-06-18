@@ -104,7 +104,9 @@ function Register() {
         <form onSubmit={handleSubmit}>
 
           <input
+            id="name"
             name="name"
+            autoComplete="name"
             placeholder="Name"
             className="auth-input"
             onChange={handleChange}
@@ -112,8 +114,10 @@ function Register() {
           />
 
           <input
+            id="email"
             name="email"
             type="email"
+            autoComplete="email"
             placeholder="Email"
             className="auth-input"
             onChange={handleChange}
@@ -121,8 +125,10 @@ function Register() {
           />
 
           <input
-            type="password"
+            id="password"
             name="password"
+            type="password"
+            autoComplete="new-password"
             placeholder="Password"
             className="auth-input"
             onChange={handleChange}

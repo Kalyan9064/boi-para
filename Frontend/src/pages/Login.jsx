@@ -48,16 +48,20 @@ function Login() {
         <form onSubmit={handleSubmit}>
 
           <input
-            type="email"
+            id="email"
             name="email"
+            type="email"
+            autoComplete="email"
             placeholder="Email"
             className="auth-input"
             onChange={handleChange}
           />
 
           <input
-            type="password"
+            id="password"
             name="password"
+            type="password"
+            autoComplete="current-password"
             placeholder="Password"
             className="auth-input"
             onChange={handleChange}
