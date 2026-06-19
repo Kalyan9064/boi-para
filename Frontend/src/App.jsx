@@ -20,6 +20,7 @@ import AllRequests from "./pages/AllRequests";
 import SafetyGuidelines from "./pages/SafetyGuidelines";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
+import NearbyBooks from "./pages/NearbyBooks";
 
 
 function App() {
@@ -46,6 +47,7 @@ function App() {
         <Route path="/safety-guidelines" element={<SafetyGuidelines />} />
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         <Route path="/terms-of-service" element={<TermsOfService />} />
+        <Route path="/book-near-you" element={<NearbyBooks />}/>
       </Routes>
 
       <Footer />

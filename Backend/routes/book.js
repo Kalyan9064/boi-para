@@ -4,12 +4,22 @@ const Book = require("../models/Book");
 const verifyToken = require("../middleware/authMiddleware");
 const { cloudinary, upload } = require("../config/cloudinary"); // ✅ NEW
 
+const calculateDistance = require("../utils/calculateDistance");
+const User = require("../models/User");
+
 // ==============================
 // ➕ ADD BOOK
 // ==============================
 router.post("/", verifyToken, upload.array("images", 5), async (req, res) => {
   try {
-    const { title, author, price, category, condition, description, location } = req.body;
+    const seller = await User.findById(req.userId);
+
+    if (!seller) {
+      return res.status(404).json({
+        message: "Seller not found"
+      });
+    }
+    const { title, author, price, category, condition, description, } = req.body;
 
     const newBook = new Book({
       title,
@@ -18,7 +28,7 @@ router.post("/", verifyToken, upload.array("images", 5), async (req, res) => {
       category,
       condition,
       description,
-      location,
+      location: seller.location,
       images: req.files ? req.files.map(f => f.secure_url) : [],
       seller: req.userId,
       isSold: false
@@ -125,6 +135,64 @@ router.put("/:id", verifyToken, async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
+
+
+// ==============================
+// 📍 GET NEARBY BOOKS
+// ==============================
+router.get("/nearby", verifyToken, async (req, res) => {
+  try {
+    const user = await User.findById(req.userId);
+
+    if (!user || !user.location) {
+      return res.status(404).json({
+        message: "User location not found"
+      });
+    }
+
+    const books = await Book.find({
+      isSold: false
+    }).populate("seller", "name email phone");
+
+    const booksWithDistance = books.map(book => {
+
+      if (
+        !book.location ||
+        typeof book.location !== "object" ||
+        book.location.latitude == null ||
+        book.location.longitude == null
+      ) {
+        return null;
+      }
+
+      const distance = calculateDistance(
+        user.location.latitude,
+        user.location.longitude,
+
+        book.location.latitude,
+        book.location.longitude
+      );
+
+      return {
+        ...book.toObject(),
+        distance
+      };
+    });
+
+    const filteredBooks = booksWithDistance
+      .filter(book => book !== null)
+      .sort((a, b) => a.distance - b.distance);
+
+    res.json(filteredBooks);
+
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: "Server error"
+    });
+  }
+});
+
 
 // ==============================
 // 📖 GET SINGLE BOOK

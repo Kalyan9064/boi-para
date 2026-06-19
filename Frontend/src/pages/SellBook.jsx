@@ -13,7 +13,7 @@ function SellBook() {
     category: "",
     condition: "",
     description: "",
-    location: ""
+    // location: ""
   });
 
   const [images, setImages] = useState([]);         // actual File objects
@@ -317,14 +317,14 @@ function SellBook() {
           onChange={handleChange}
         />
 
-        <label className="input-label">Location</label>
+        {/* <label className="input-label">Location</label>
         <input
           type="text"
           name="location"
           placeholder="e.g. Kolkata"
           className="form-control"
           onChange={handleChange}
-        />
+        /> */}
 
         <button type="submit" className="post-btn">
           Post Now 🚀

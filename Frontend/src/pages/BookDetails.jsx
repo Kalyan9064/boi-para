@@ -100,7 +100,8 @@ function BookDetail() {
 
           <hr />
 
-          <p>📍 {book.location}</p>
+          {/* <p>📍 {book.location}</p> */}
+          <p>📍 Location Available</p>
 
           <hr />
 

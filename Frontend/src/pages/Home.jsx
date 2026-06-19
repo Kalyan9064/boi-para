@@ -10,6 +10,7 @@ import BookRequestSlider from "./BookRequestSlider";
 import { useNavigate } from "react-router-dom";
 import CategorySection from "../components/CategorySection";
 import BookCardSkeleton from "../components/BookCardSkeleton";
+import NearbyBooks from "../pages/NearbyBooks";
 
 function Home() {
 
@@ -86,6 +87,8 @@ function Home() {
         <br></br>
         <br></br>
       </div>
+
+      <NearbyBooks />
 
       <HowItWorks />
 

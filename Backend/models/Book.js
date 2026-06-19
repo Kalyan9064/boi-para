@@ -7,7 +7,10 @@ const bookSchema = new mongoose.Schema({
   category: String,
   condition: String,
   description: String,
-  location: String,
+  location: {
+    latitude: Number,
+    longitude: Number,
+  },
   images: [String],
 
   seller: {

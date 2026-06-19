@@ -31,7 +31,7 @@ function BookCard({ book }) {
         );
         setIsSaved(exists);
       })
-      .catch(() => {});
+      .catch(() => { });
   }, [book._id]);
 
   // ==============================
@@ -130,7 +130,13 @@ function BookCard({ book }) {
 
             {/* LOCATION + TIME */}
             <div className="bottom-row">
-              <span>📍 {book.location}</span>
+              {/* <span>📍 {book.location}</span> */}
+              {/* <p>📍 Location Available</p> */}
+              {typeof book.distance === "number" && (
+                <span className="distance-badge">
+                  📍 {book.distance.toFixed(1)} km away
+                </span>
+              )}
               <span>⏱ {getTimeAgo(book.createdAt)}</span>
             </div>
 
