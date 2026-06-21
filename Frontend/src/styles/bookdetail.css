@@ -59,3 +59,17 @@
   font-size: 12px;
   color: #777;
 }
+
+.location-section {
+  margin-top: 25px;
+}
+
+.location-section h4 {
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.location-section p {
+  color: #666;
+  margin-bottom: 15px;
+}

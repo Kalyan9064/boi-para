@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import API from "../api/api";
 import toast from "../utils/toast";
+import BookLocationMap from "../components/BookLocationMap";
 import "../styles/bookdetail.css";
 
 function BookDetail() {
@@ -114,8 +115,7 @@ function BookDetail() {
 
             <p><strong>{book.seller?.name}</strong></p>
             <p>{book.seller?.email}</p>
-
-            <button
+                        <button
               onClick={() => {
                 const phone = book.seller?.phone;
 
@@ -140,6 +140,26 @@ function BookDetail() {
             >
               Chat with Seller
             </button>
+
+            <div className="location-section">
+
+              <h4>📍 Seller Location</h4>
+
+              <p>
+                Click the map to get directions.
+              </p>
+
+              {book.location?.latitude &&
+                book.location?.longitude && (
+
+                  <BookLocationMap
+                    latitude={book.location.latitude}
+                    longitude={book.location.longitude}
+                  />
+
+                )}
+
+            </div>
 
             <div className="warning">
               For your safety, meet in a public place.
