@@ -7,12 +7,38 @@ import getTimeAgo from "../utils/getTimeAgo";
 function AllRequests() {
     const [requests, setRequests] = useState([]);
 
+    const token = localStorage.getItem("token");
+    let loggedInUserId = null;
+    if (token) {
+        try {
+            const base64Url = token.split(".")[1];
+            const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+            loggedInUserId = JSON.parse(window.atob(base64)).id;
+        } catch (e) {
+            console.log("Token decode error:", e);
+        }
+    }
+
     useEffect(() => {
         API.get("/api/requests")
             .then((res) => setRequests(res.data))
             .catch((err) => console.log(err));
     }, []);
 
+
+    const handleDelete = async (id) => {
+        const confirmDelete = window.confirm("Delete this book request?");
+        if (!confirmDelete) return;
+
+        try {
+            await API.delete(`/api/requests/${id}`);
+            setRequests(prev => prev.filter(req => req._id !== id));
+            toast.success("Request deleted successfully!");
+        } catch (err) {
+            console.log(err);
+            toast.error("Error deleting request");
+        }
+    };
 
     return (
         <div className="all-requests-container">
@@ -60,31 +86,55 @@ function AllRequests() {
                                 👤 {request.requestedBy?.name}
                             </p>
 
-                            {/* WhatsApp Button */}
-                            <button
-                                className="whatsapp-btn"
-                                onClick={() => {
-                                    const phone =
-                                        request.requestedBy?.phone;
+                            {/* Action Buttons */}
+                            <div className="card-actions" style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
+                                {/* WhatsApp Button */}
+                                <button
+                                    className="whatsapp-btn"
+                                    style={{ flex: 1 }}
+                                    onClick={() => {
+                                        const phone =
+                                            request.requestedBy?.phone;
 
-                                    if (!phone) {
-                                        toast.error(
-                                            "Phone not available"
-                                        );
-                                        return;
-                                    }
+                                        if (!phone) {
+                                            toast.error(
+                                                "Phone not available"
+                                            );
+                                            return;
+                                        }
 
-                                    const message = `Hi, I have the book "${request.bookName}" by ${request.author} which you requested on Boi Para. I want to sell this book. Are you interested?`;
+                                        const message = `Hi, I have the book "${request.bookName}" by ${request.author} which you requested on Boi Para. I want to sell this book. Are you interested?`;
 
-                                    const url = `https://wa.me/${phone}?text=${encodeURIComponent(
-                                        message
-                                    )}`;
+                                        const url = `https://wa.me/${phone}?text=${encodeURIComponent(
+                                            message
+                                        )}`;
 
-                                    window.open(url, "_blank");
-                                }}
-                            >
-                                I Have This Book
-                            </button>
+                                        window.open(url, "_blank");
+                                    }}
+                                >
+                                    I Have This Book
+                                </button>
+
+                                {request.requestedBy?._id === loggedInUserId && (
+                                    <button
+                                        className="delete-request-btn"
+                                        style={{
+                                            background: "#dc3545",
+                                            color: "#fff",
+                                            border: "none",
+                                            borderRadius: "8px",
+                                            padding: "10px 15px",
+                                            cursor: "pointer",
+                                            fontSize: "14px",
+                                            fontWeight: "500",
+                                            transition: "background 0.3s"
+                                        }}
+                                        onClick={() => handleDelete(request._id)}
+                                    >
+                                        🗑️ Delete
+                                    </button>
+                                )}
+                            </div>
                         </div>
                     ))}
                 </div>

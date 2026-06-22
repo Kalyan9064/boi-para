@@ -8,12 +8,14 @@ function Account() {
   const [user, setUser] = useState(null);
   const [myBooks, setMyBooks] = useState([]);
   const [bookLoading, setBookLoading] = useState(true);
+  const [myRequests, setMyRequests] = useState([]);
+  const [requestsLoading, setRequestsLoading] = useState(true);
   const [image, setImage] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  // ==============================
-  // 📦 LOAD USER + BOOKS
-  // ==============================
+  
+  // LOAD USER + BOOKS + REQUESTS
+ 
   useEffect(() => {
     const token = localStorage.getItem("token");
 
@@ -46,11 +48,21 @@ function Account() {
         setBookLoading(false);
       });
 
+    // 🔹 MY REQUESTS
+    API.get("/api/requests/my-requests")
+      .then(res => {
+        setMyRequests(res.data);
+        setRequestsLoading(false);
+      })
+      .catch(err => {
+        console.log(err);
+        setRequestsLoading(false);
+      });
+
   }, []);
 
-  // ==============================
-  // 📤 IMAGE UPLOAD
-  // ==============================
+  // IMAGE UPLOAD
+
   const handleImageUpload = async (file) => {
     if (!file) return;
 
@@ -78,9 +90,9 @@ function Account() {
     }
   };
 
-  // ==============================
-  // ❌ DELETE BOOK
-  // ==============================
+
+  //  DELETE BOOK
+ 
   const handleDelete = async (id) => {
     const confirmDelete = window.confirm("Delete this book?");
     if (!confirmDelete) return;
@@ -97,9 +109,28 @@ function Account() {
     }
   };
 
-  // ==============================
-  // ⏳ LOADING
-  // ==============================
+  
+  // DELETE REQUEST
+
+  const handleDeleteRequest = async (id) => {
+    const confirmDelete = window.confirm("Delete this book request?");
+    if (!confirmDelete) return;
+
+    try {
+      await API.delete(`/api/requests/${id}`);
+
+      setMyRequests(prev => prev.filter(req => req._id !== id));
+      toast.success("Request deleted successfully!");
+
+    } catch (err) {
+      console.log(err);
+      toast.error("Error deleting request");
+    }
+  };
+
+
+  //  LOADING
+
   if (user === null) {
     return <h3 style={{ textAlign: "center", marginTop: "50px" }}>Loading...</h3>;
   }
@@ -109,9 +140,7 @@ function Account() {
 
       <h1 className="account-title">My Account</h1>
 
-      {/* ==============================
-          👤 PROFILE CARD
-      ============================== */}
+      {/* PROFILE CARD */}
       <div className="account-card">
 
         <div className="profile-section">
@@ -143,9 +172,7 @@ function Account() {
 
       </div>
 
-      {/* ==============================
-          📚 MY BOOKS SECTION
-      ============================== */}
+      {/* MY BOOKS SECTION */}
       <div className="my-books-section">
 
         <h2>My Books</h2>
@@ -163,10 +190,13 @@ function Account() {
                 <div className="card h-100">
 
                   <img
-                    src={`${import.meta.env.VITE_API_URL}/uploads/${book.image}`}
+                    src={book.images && book.images[0] ? book.images[0] : "/placeholder-book.jpg"}
                     className="card-img-top"
                     alt="book"
                     style={{ height: "200px", objectFit: "cover" }}
+                    onError={(e) => {
+                      e.target.src = "/placeholder-book.jpg";
+                    }}
                   />
 
                   <div className="card-body">
@@ -207,6 +237,52 @@ function Account() {
               </div>
             ))}
 
+          </div>
+        )}
+
+      </div>
+
+      {/*MY BOOK REQUESTS SECTION */}
+      <div className="my-requests-section mt-5">
+
+        <h2>My Book Requests</h2>
+
+        {requestsLoading ? (
+          <p>Loading...</p>
+        ) : myRequests.length === 0 ? (
+          <p>No book requests submitted yet.</p>
+        ) : (
+          <div className="row">
+            {myRequests.map(request => (
+              <div key={request._id} className="col-md-6 mb-4">
+                <div className="card h-100 p-3" style={{ background: "#fcfbfa", borderColor: "#e5dfd6" }}>
+                  <div className="card-body d-flex flex-column justify-content-between p-0">
+                    <div>
+                      <span className="badge bg-secondary mb-2" style={{ backgroundColor: "#8b5a2b" }}>Looking For</span>
+                      <h5 className="card-title" style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "22px", fontWeight: "bold" }}>{request.bookName}</h5>
+                      <h6 className="card-subtitle mb-2 text-muted">by {request.author}</h6>
+                      {request.message && (
+                        <p className="card-text italic-text" style={{ fontStyle: "italic", color: "#555" }}>
+                          "{request.message}"
+                        </p>
+                      )}
+                      <p className="card-text" style={{ fontSize: "14px" }}>
+                        📍 {request.location}
+                      </p>
+                    </div>
+                    
+                    <div className="mt-3">
+                      <button
+                        onClick={() => handleDeleteRequest(request._id)}
+                        className="btn btn-sm btn-danger"
+                      >
+                        Delete Request
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         )}
 
