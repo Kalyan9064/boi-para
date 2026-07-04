@@ -102,7 +102,15 @@ function BookDetail() {
           <hr />
 
           {/* <p>📍 {book.location}</p> */}
-          <p>📍 Location Available</p>
+          <p className="book-location">
+            📍{" "}
+            {[
+              book.seller?.location?.area,
+              book.seller?.location?.city,
+            ]
+              .filter(Boolean)
+              .join(", ") || "Location Available"}
+          </p>
 
           <hr />
 
@@ -115,7 +123,7 @@ function BookDetail() {
 
             <p><strong>{book.seller?.name}</strong></p>
             <p>{book.seller?.email}</p>
-                        <button
+            <button
               onClick={() => {
                 const phone = book.seller?.phone;
 

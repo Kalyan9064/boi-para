@@ -81,6 +81,23 @@ function BookCard({ book }) {
     }
   };
 
+  const locationArea =
+    book.seller?.location?.area ||
+    book.location?.area ||
+    "";
+
+  const locationCity =
+    book.seller?.location?.city ||
+    book.location?.city ||
+    "";
+
+  const readableLocation = [
+    locationArea,
+    locationCity,
+  ]
+    .filter(Boolean)
+    .join(", ");
+
   return (
     <div className="col-md-3 mb-4">
 
@@ -129,15 +146,42 @@ function BookCard({ book }) {
             </div>
 
             {/* LOCATION + TIME */}
+            {/* ================= LOCATION ================= */}
+
+            <div className="book-location-row">
+              <span className="book-location-icon">
+                📍
+              </span>
+
+              <span className="book-location-text">
+                {readableLocation || "Location Available"}
+              </span>
+            </div>
+
+
+            {/* ================= DISTANCE + TIME ================= */}
+
             <div className="bottom-row">
-              {/* <span>📍 {book.location}</span> */}
-              {/* <p>📍 Location Available</p> */}
+
               {typeof book.distance === "number" && (
+
                 <span className="distance-badge">
-                  📍 {book.distance.toFixed(1)} km away
+
+                  {book.distance < 1
+                    ? `${Math.round(book.distance * 1000)} m away`
+                    : `${book.distance.toFixed(1)} km away`}
+
                 </span>
+
               )}
-              <span>⏱ {getTimeAgo(book.createdAt)}</span>
+
+
+              <span className="book-time">
+
+                ⏱ {getTimeAgo(book.createdAt)}
+
+              </span>
+
             </div>
 
           </div>

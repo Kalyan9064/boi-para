@@ -1,43 +1,537 @@
+* {
+  box-sizing: border-box;
+}
+
 .auth-container {
-  height: 100vh;
+  min-height: 100vh;
+
   display: flex;
   justify-content: center;
   align-items: center;
-  background: #f5f5f5;
+
+  padding: 40px 20px;
+
+  background:
+    radial-gradient(
+      circle at top left,
+      rgba(183, 122, 61, 0.08),
+      transparent 35%
+    ),
+    #f5f1eb;
 }
 
+
+/* ================================
+   AUTH CARD
+================================ */
+
 .auth-card {
-  width: 350px;
-  padding: 30px;
-  background: #fff;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-  border-radius: 10px;
+  width: 100%;
+  max-width: 440px;
+
+  padding: 38px;
+
+  background: #ffffff;
+
+  border: 1px solid rgba(75, 36, 20, 0.08);
+
+  border-radius: 16px;
+
+  box-shadow:
+    0 20px 50px rgba(75, 36, 20, 0.08);
+
+  animation: authFadeIn 0.4s ease;
+}
+
+
+/* ================================
+   HEADER
+================================ */
+
+.auth-header {
+  text-align: center;
+  margin-bottom: 28px;
 }
 
 .auth-title {
-  font-family: 'Cormorant Garamond', serif;
-  text-align: center;
-  margin-bottom: 20px;
+  margin: 0;
+
+  font-family: "Cormorant Garamond", serif;
+  font-size: 34px;
+  font-weight: 700;
+
+  color: #4b2414;
+}
+
+.auth-subtitle {
+  margin: 7px 0 0;
+
+  font-size: 14px;
+  line-height: 1.5;
+
+  color: #7b6b63;
+}
+
+
+/* ================================
+   FORM FIELD
+================================ */
+
+.auth-field {
+  margin-bottom: 17px;
+}
+
+.auth-field label {
+  display: block;
+
+  margin-bottom: 7px;
+
+  font-size: 13px;
+  font-weight: 600;
+
+  color: #4b3a32;
 }
 
 .auth-input {
   width: 100%;
-  padding: 10px;
-  margin-bottom: 15px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
+
+  padding: 12px 14px;
+
+  margin: 0;
+
+  font-size: 14px;
+
+  color: #3f3029;
+
+  background: #ffffff;
+
+  border: 1px solid #ddd4ce;
+
+  border-radius: 8px;
+
+  outline: none;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
+
+.auth-input::placeholder {
+  color: #a69a94;
+}
+
+.auth-input:hover {
+  border-color: #c5b2a7;
+}
+
+.auth-input:focus {
+  border-color: #b77a3d;
+
+  box-shadow:
+    0 0 0 3px rgba(183, 122, 61, 0.12);
+}
+
+
+/* ================================
+   ERROR MESSAGE
+================================ */
+
+.auth-error {
+  padding: 10px 12px;
+
+  margin-bottom: 18px;
+
+  font-size: 13px;
+
+  color: #a23434;
+
+  background: #fff2f2;
+
+  border: 1px solid #f2cccc;
+
+  border-radius: 7px;
+}
+
+
+/* ================================
+   LOCATION SECTION
+================================ */
+
+.location-section {
+  margin-top: 8px;
+  margin-bottom: 22px;
+}
+
+.location-section-header {
+  margin-bottom: 10px;
+}
+
+.location-section-header h3 {
+  margin: 0 0 3px;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  color: #4b3a32;
+}
+
+.location-section-header p {
+  margin: 0;
+
+  font-size: 12px;
+
+  color: #8a7b73;
+}
+
+
+/* ================================
+   LOCATION BUTTON
+================================ */
+
+.location-btn {
+  width: 100%;
+
+  min-height: 68px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 13px;
+
+  padding: 12px 14px;
+
+  background: #fffaf5;
+
+  border: 1px dashed #caa47c;
+
+  border-radius: 10px;
+
+  text-align: left;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.15s ease,
+    box-shadow 0.2s ease;
+}
+
+.location-btn:hover:not(:disabled) {
+  background: #fff6ed;
+
+  border-color: #b77a3d;
+
+  box-shadow:
+    0 5px 16px rgba(183, 122, 61, 0.1);
+
+  transform: translateY(-1px);
+}
+
+.location-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.location-btn:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+
+/* LOCATION ICON */
+
+.location-icon {
+  width: 38px;
+  height: 38px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  font-size: 20px;
+  font-weight: 700;
+
+  color: #7d4928;
+
+  background: #f4e5d6;
+
+  border-radius: 50%;
+}
+
+
+/* LOCATION CONTENT */
+
+.location-btn-content {
+  flex: 1;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 3px;
+}
+
+.location-btn-title {
+  font-size: 14px;
+  font-weight: 600;
+
+  color: #4b2414;
+}
+
+.location-btn-description {
+  font-size: 11px;
+  line-height: 1.4;
+
+  color: #8a756a;
+}
+
+
+/* LOCATION ARROW */
+
+.location-arrow {
+  font-size: 20px;
+
+  color: #a67855;
+
+  transition: transform 0.2s ease;
+}
+
+.location-btn:hover .location-arrow {
+  transform: translateX(3px);
+}
+
+
+/* ================================
+   CAPTURED LOCATION STATE
+================================ */
+
+.location-btn.location-captured {
+  background: #f5faf5;
+
+  border-style: solid;
+
+  border-color: #a8c9aa;
+}
+
+.location-captured .location-icon {
+  color: #397044;
+
+  background: #deefdf;
+}
+
+.location-captured .location-btn-title {
+  color: #35673e;
+}
+
+
+/* SUCCESS MESSAGE */
+
+.location-success {
+  display: flex;
+  align-items: center;
+
+  gap: 7px;
+
+  margin-top: 8px;
+
+  font-size: 12px;
+
+  color: #4e7a55;
+}
+
+.success-icon {
+  width: 17px;
+  height: 17px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  font-size: 11px;
+  font-weight: 700;
+
+  color: white;
+
+  background: #5c8c64;
+
+  border-radius: 50%;
+}
+
+
+/* ================================
+   REGISTER BUTTON
+================================ */
 
 .auth-btn {
   width: 100%;
-  padding: 10px;
-  background: #000;
-  color: #fff;
+
+  padding: 13px 18px;
+
+  margin-top: 2px;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  color: #ffffff;
+
+  background: #4b2414;
+
   border: none;
+
+  border-radius: 8px;
+
   cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    transform 0.15s ease,
+    box-shadow 0.2s ease;
 }
 
+.auth-btn:hover {
+  background: #63321e;
+
+  box-shadow:
+    0 6px 18px rgba(75, 36, 20, 0.18);
+
+  transform: translateY(-1px);
+}
+
+.auth-btn:active {
+  transform: translateY(0);
+}
+
+/* ================================
+   LOGIN PAGE
+================================ */
+
+.login-card {
+  max-width: 420px;
+}
+
+
+/* PASSWORD LABEL ROW */
+
+.password-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  margin-bottom: 7px;
+}
+
+.password-label-row label {
+  margin-bottom: 0;
+}
+
+
+/* FORGOT PASSWORD */
+
+.forgot-password {
+  font-size: 12px;
+  font-weight: 500;
+
+  color: #8d542e;
+
+  text-decoration: none;
+
+  transition: color 0.2s ease;
+}
+
+.forgot-password:hover {
+  color: #4b2414;
+
+  text-decoration: underline;
+}
+
+
+/* DISABLED LOGIN BUTTON */
+
+.auth-btn:disabled {
+  opacity: 0.7;
+
+  cursor: not-allowed;
+
+  transform: none;
+
+  box-shadow: none;
+}
+
+/* ================================
+   LOGIN LINK
+================================ */
+
 .auth-link {
+  margin-top: 22px;
+  padding: auto;
   text-align: center;
-  margin-top: 10px;
+}
+
+.auth-link p {
+  margin: 0;
+
+  font-size: 13px;
+
+  color: #7b6b63;
+}
+
+.auth-link a {
+  font-weight: 600;
+
+  color: #8d542e;
+
+  text-decoration: none;
+}
+
+.auth-link a:hover {
+  text-decoration: underline;
+}
+
+
+/* ================================
+   ANIMATION
+================================ */
+
+@keyframes authFadeIn {
+
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+}
+
+
+/* ================================
+   MOBILE
+================================ */
+
+@media (max-width: 520px) {
+
+  .auth-container {
+    align-items: flex-start;
+
+    padding: 25px 14px;
+  }
+
+  .auth-card {
+    padding: 26px 20px;
+
+    border-radius: 12px;
+  }
+
+  .auth-title {
+    font-size: 30px;
+  }
+
+  .location-btn {
+    padding: 11px 12px;
+  }
+
 }

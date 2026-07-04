@@ -6,6 +6,7 @@ const verifyToken = require("../middleware/authMiddleware");
 const multer = require("multer");
 const crypto = require("crypto");
 const sendVerificationEmail = require("../utils/sendEmail");
+const reverseGeocode = require("../utils/reverseGeocode");
 
 const router = express.Router();
 
@@ -35,49 +36,172 @@ router.post("/register", async (req, res) => {
       email,
       password,
       phone,
-      location
+      location,
     } = req.body;
+
+
+    // ==============================
+    // VALIDATE LOCATION
+    // ==============================
+
+    if (
+      !location ||
+      location.latitude == null ||
+      location.longitude == null
+    ) {
+      return res.status(400).json({
+        message: "Location is required",
+      });
+    }
+
+
+    const latitude = Number(location.latitude);
+    const longitude = Number(location.longitude);
+
+
+    // Validate coordinate numbers
+
+    if (
+      !Number.isFinite(latitude) ||
+      !Number.isFinite(longitude)
+    ) {
+      return res.status(400).json({
+        message: "Invalid location coordinates",
+      });
+    }
+
+
+    // Validate coordinate ranges
+
+    if (
+      latitude < -90 ||
+      latitude > 90 ||
+      longitude < -180 ||
+      longitude > 180
+    ) {
+      return res.status(400).json({
+        message: "Invalid location coordinates",
+      });
+    }
+
+
+    // ==============================
+    // CHECK EXISTING USER
+    // ==============================
 
     const existingUser = await User.findOne({ email });
 
     if (existingUser) {
       return res.status(400).json({
-        message: "User already exists, please login"
-
+        message: "User already exists, please login",
       });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // ==============================
+    // REVERSE GEOCODING
+    // ==============================
+
+    const locationData = await reverseGeocode(
+      latitude,
+      longitude
+    );
+
+
+    if (!locationData) {
+      return res.status(502).json({
+        message:
+          "Unable to detect location. Please try again.",
+      });
+    }
+
+
+    console.log("Detected Location:", locationData);
+
+
+    // ==============================
+    // HASH PASSWORD
+    // ==============================
+
+    const hashedPassword = await bcrypt.hash(
+      password,
+      10
+    );
+
+
+    // ==============================
+    // CREATE VERIFICATION TOKEN
+    // ==============================
 
     const verificationToken =
       crypto.randomBytes(32).toString("hex");
 
+
+    // ==============================
+    // CREATE USER
+    // ==============================
+
     const newUser = new User({
       name,
+
       email,
+
       password: hashedPassword,
+
       phone,
-      location,
-      verificationToken
+
+      verificationToken,
+
+      location: {
+        latitude,
+        longitude,
+
+        area: locationData.area,
+        city: locationData.city,
+        district: locationData.district,
+        state: locationData.state,
+        country: locationData.country,
+        postcode: locationData.postcode,
+
+        address: locationData.address,
+      },
     });
 
+
+    // ==============================
+    // SAVE USER
+    // ==============================
+
     await newUser.save();
+
+
+    // ==============================
+    // SEND VERIFICATION EMAIL
+    // ==============================
 
     await sendVerificationEmail(
       email,
       verificationToken
     );
 
+
+    // ==============================
+    // RESPONSE
+    // ==============================
+
     res.status(201).json({
       message:
-        "Registered successfully. Please verify your email."
+        "Registered successfully. Please verify your email.",
     });
 
   } catch (error) {
-    console.log(error);
+
+    console.error("Registration Error:", error);
+
     res.status(500).json({
-      message: "Server error"
+      message: "Server error",
     });
+
   }
 });
 

@@ -1,80 +1,156 @@
 import React, { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import API from "../api/api";
 import toast from "../utils/toast";
 import "../styles/auth.css";
 
 function Login() {
-
   const [form, setForm] = useState({
     email: "",
-    password: ""
+    password: "",
   });
 
-  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setForm({
       ...form,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (!form.email || !form.password) {
+      toast.error("Please enter your email and password");
+      return;
+    }
+
     try {
+      setLoading(true);
+
       const res = await API.post("/api/auth/login", form);
 
       localStorage.setItem("token", res.data.token);
 
       toast.success("Login successful");
+
       setTimeout(() => {
         window.location.href = "/";
       }, 1000);
-
     } catch (err) {
-      toast.error(err.response?.data?.message || "Login failed");
+      toast.error(
+        err.response?.data?.message || "Login failed"
+      );
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="auth-container">
 
-      <div className="auth-card">
+      <div className="auth-card login-card">
 
-        <h2 className="auth-title">Login</h2>
+        {/* HEADER */}
+
+        <div className="auth-header">
+
+          <h2 className="auth-title">
+            Welcome Back
+          </h2>
+
+          <p className="auth-subtitle">
+            Sign in to continue exploring books on Boi Para
+          </p>
+
+        </div>
+
+
+        {/* LOGIN FORM */}
 
         <form onSubmit={handleSubmit}>
 
-          <input
-            id="email"
-            name="email"
-            type="email"
-            autoComplete="email"
-            placeholder="Email"
-            className="auth-input"
-            onChange={handleChange}
-          />
+          <div className="auth-field">
 
-          <input
-            id="password"
-            name="password"
-            type="password"
-            autoComplete="current-password"
-            placeholder="Password"
-            className="auth-input"
-            onChange={handleChange}
-          />
+            <label htmlFor="email">
+              Email Address
+            </label>
 
-          <button className="auth-btn">Login</button>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              autoComplete="email"
+              placeholder="Enter your email address"
+              className="auth-input"
+              value={form.email}
+              onChange={handleChange}
+              required
+            />
+
+          </div>
+
+
+          <div className="auth-field">
+
+            <div className="password-label-row">
+
+              <label htmlFor="password">
+                Password
+              </label>
+
+              <Link
+                to="/forgot-password"
+                className="forgot-password"
+              >
+                Forgot password?
+              </Link>
+
+            </div>
+
+
+            <input
+              id="password"
+              name="password"
+              type="password"
+              autoComplete="current-password"
+              placeholder="Enter your password"
+              className="auth-input"
+              value={form.password}
+              onChange={handleChange}
+              required
+            />
+
+          </div>
+
+
+          <button
+            type="submit"
+            className="auth-btn"
+            disabled={loading}
+          >
+
+            {loading ? "Signing in..." : "Sign In"}
+
+          </button>
 
         </form>
 
+
+        {/* REGISTER LINK */}
+
         <div className="auth-link">
+
           <p>
-            Don’t have an account? <Link to="/register">Sign Up</Link>
+            Don&apos;t have an account?{" "}
+
+            <Link to="/register">
+              Create account
+            </Link>
           </p>
+
         </div>
 
       </div>
