@@ -9,6 +9,11 @@ const verifyToken = (req, res, next) => {
       return res.status(401).json({ message: "No token provided" });
     }
 
+    // Token validation
+    if (!authHeader.startsWith("Bearer ")) {
+      return res.status(401).json({ message: "Invalid token format" });
+    }
+
     // 2️⃣ Extract token (remove "Bearer ")
     const token = authHeader.split(" ")[1];
 
