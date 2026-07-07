@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import API from "../api/api";
 import toast from "../utils/toast";
 import "../styles/auth.css";
+import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 
 function Login() {
   const [form, setForm] = useState({
@@ -11,6 +12,7 @@ function Login() {
   });
 
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (e) => {
     setForm({
@@ -110,18 +112,28 @@ function Login() {
 
             </div>
 
-
-            <input
-              id="password"
-              name="password"
-              type="password"
-              autoComplete="current-password"
-              placeholder="Enter your password"
-              className="auth-input"
-              value={form.password}
-              onChange={handleChange}
-              required
-            />
+            <div className="auth-password-wrapper">
+              <input
+                id="password"
+                name="password"
+                type={showPassword ? "text" : "password"}
+                autoComplete="current-password"
+                placeholder="Enter your password"
+                className="auth-input"
+                value={form.password}
+                onChange={handleChange}
+                required
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                aria-label={showPassword ? "Hide password" : "Show password"}
+                aria-pressed={showPassword}
+                className="auth-password-toggle"
+              >
+                {showPassword ? <FaRegEyeSlash aria-hidden="true" size={18} /> : <FaRegEye aria-hidden="true" size={18} />}
+              </button>
+            </div>
 
           </div>
 
