@@ -49,9 +49,9 @@ function BookRequestSlider() {
     // ==============================
     // EMPTY STATE
     // ==============================
-    if (requests.length === 0) {
-        return null; // hide section if no requests
-    }
+    // if (requests.length === 0) {
+    //     return null; // hide section if no requests
+    // }
 
     const handleSubmit = async () => {
         try {
