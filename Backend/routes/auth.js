@@ -102,17 +102,20 @@ router.post("/register", async (req, res) => {
     // REVERSE GEOCODING
     // ==============================
 
-    const locationData = await reverseGeocode(
-      latitude,
-      longitude
-    );
-
+    let locationData = await reverseGeocode(latitude, longitude);
 
     if (!locationData) {
-      return res.status(502).json({
-        message:
-          "Unable to detect location. Please try again.",
-      });
+      console.warn("Reverse geocoding failed. Saving coordinates only.");
+
+      locationData = {
+        area: "",
+        city: "",
+        district: "",
+        state: "",
+        country: "",
+        postcode: "",
+        address: "",
+      };
     }
 
 

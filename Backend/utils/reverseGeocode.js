@@ -11,11 +11,10 @@ const reverseGeocode = async (latitude, longitude) => {
           format: "jsonv2",
           addressdetails: 1,
         },
-
         headers: {
-          "User-Agent": "BoiPara/1.0",
+          "User-Agent": "BoiPara/1.0 (contact@boipara.com)",
+          Accept: "application/json",
         },
-
         timeout: 10000,
       }
     );
@@ -60,10 +59,14 @@ const reverseGeocode = async (latitude, longitude) => {
       address: data.display_name || "",
     };
   } catch (error) {
-    console.error(
-      "Reverse geocoding failed:",
-      error.response?.data || error.message
-    );
+    if (error.response?.status === 429) {
+      console.warn("Nominatim rate limit exceeded (429).");
+    } else {
+      console.error(
+        "Reverse geocoding failed:",
+        error.response?.data || error.message
+      );
+    }
 
     return null;
   }
