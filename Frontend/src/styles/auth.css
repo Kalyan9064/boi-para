@@ -92,6 +92,20 @@
   color: #4b3a32;
 }
 
+.auth-password-wrapper {
+  position: relative;
+}
+
+.auth-password-toggle {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
 .auth-input {
   width: 100%;
 
