@@ -1,5 +1,28 @@
 # 📚 Boi Para - Second-Hand Book Marketplace
 
+## Table of Contents
+
+- [Overview](#overview)
+- [🤝 Contributing & Support](#-contributing--support)
+- [✨ Features](#-features)
+- [🛠️ Tech Stack](#️-tech-stack)
+- [🚨 Problem It Solves](#-problem-it-solves)
+- [🎯 Target Users](#-target-users)
+- [⚙️ Technical Approach](#️-technical-approach)
+  - [Frontend Architecture](#frontend-architecture)
+  - [Backend Architecture](#backend-architecture)
+  - [Database Design](#database-design)
+  - [Authentication Flow](#authentication-flow)
+  - [Data Flow](#data-flow)
+- [📂 Project Structure](#-project-structure)
+- [🚀 Quick Start](#-quick-start)
+- [🚀 Future Improvements](#-future-improvements)
+- [🌟 Key Highlights](#-key-highlights)
+- [👨‍💻 Developer](#-developer)
+- [📌 Conclusion](#-conclusion)
+
+---
+
 ## Overview
 
 **Boi Para** is a full-stack MERN application designed to help students and book lovers buy and sell second-hand books easily. Many students purchase expensive textbooks for a semester and no longer need them afterward, while other students struggle to find affordable study materials. Boi Para bridges this gap by providing a dedicated platform where users can list their old books for sale and buyers can discover books at lower prices.
@@ -7,6 +30,16 @@
 The platform offers a simple, secure, and user-friendly experience for managing book listings, connecting buyers with sellers, and promoting book reuse within the community.
 
 🌐 **Live Demo:** https://boi-para.vercel.app/
+
+---
+
+## 🤝 Contributing & Support
+
+We welcome contributions to Boi Para! If you're a new contributor, please read our comprehensive [CONTRIBUTING.md](CONTRIBUTING.md) guide for detailed instructions on how to set up your development environment, follow our coding standards, and submit your contributions.
+
+If you encounter any issues while setting up or running the project, please refer to our [TROUBLESHOOTING.md](TROUBLESHOOTING.md) guide for solutions to common problems.
+
+This project is open-source and distributed under the [MIT License](LICENSE).
 
 ---
 
@@ -221,6 +254,87 @@ boi-para/
 ├── package.json
 └── README.md
 ```
+
+---
+
+## 🚀 Quick Start
+
+Follow these steps to set up and run Boi Para locally on your machine.
+
+### 1. Clone the Repository
+
+First, clone the project repository to your local machine:
+
+```bash
+git clone https://github.com/Kalyan9064/boi-para.git
+cd boi-para
+```
+
+### 2. Backend Setup
+
+Navigate to the `Backend` directory, install dependencies, and set up environment variables.
+
+```bash
+cd Backend
+npm install
+```
+
+Create a `.env` file in the `Backend` directory and add the following environment variables. You can use `Backend/.env.example` as a template.
+
+```
+PORT=5000
+MONGO_URI=your_mongodb_connection_string_here
+CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name_here
+CLOUDINARY_API_KEY=your_cloudinary_api_key_here
+CLOUDINARY_API_SECRET=your_cloudinary_api_secret_here
+JWT_SECRET=your_jwt_secret_here
+GEMINI_API_KEY=your_gemini_api_key_here
+CLIENT_URL=http://localhost:5173
+EMAIL_USER=your_email_address_here
+BREVO_API_KEY=your_brevo_api_key_here
+```
+
+**Note:**
+- Replace `your_mongodb_connection_string_here` with your MongoDB Atlas connection string.
+- Obtain Cloudinary credentials from your Cloudinary account.
+- Generate a strong `JWT_SECRET`.
+- Get a `GEMINI_API_KEY` from Google AI Studio or similar.
+- Provide your email and Brevo (Sendinblue) API key for email services.
+
+Start the backend server:
+
+```bash
+npm start
+```
+
+The backend server will run on `http://localhost:5000` (or the `PORT` you specified).
+
+### 3. Frontend Setup
+
+Open a new terminal, navigate to the `Frontend` directory, install dependencies, and set up environment variables.
+
+```bash
+cd ../Frontend
+npm install
+```
+
+Create a `.env` file in the `Frontend` directory and add the following environment variable. You can use `Frontend/.env.example` as a template.
+
+```
+VITE_API_URL=http://localhost:5000
+```
+
+Start the frontend development server:
+
+```bash
+npm run dev
+```
+
+The frontend application will typically run on `http://localhost:5173` (or another available port).
+
+### 4. Access the Application
+
+Once both the frontend and backend servers are running, open your web browser and navigate to `http://localhost:5173` to access the Boi Para application.
 
 ---
 
