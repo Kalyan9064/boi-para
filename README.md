@@ -265,3 +265,29 @@ B.Tech in Computer Science & Engineering
 ## 📌 Conclusion
 
 Boi Para is a community-driven marketplace that makes buying and selling second-hand books simple, affordable, and efficient. By connecting book owners with interested buyers, the platform helps students save money, promotes book reuse, and creates a more accessible learning ecosystem.
+
+## Troubleshooting
+
+### Installation fails
+- Ensure you are using the supported Node.js version.
+- Run `npm install` or `npm ci`.
+- Delete `node_modules` and reinstall dependencies if necessary.
+
+### Environment variables not loading
+- Verify that a `.env` file exists.
+- Ensure all required variables are defined.
+- Restart the development server after making changes.
+
+## FAQ
+
+### How do I start the project?
+Run:
+
+```bash
+npm install
+npm run dev
+```
+
+### How do I report a bug?
+Please open a GitHub issue with reproduction steps and relevant logs.
+
