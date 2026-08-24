@@ -265,3 +265,7 @@ B.Tech in Computer Science & Engineering
 ## 📌 Conclusion
 
 Boi Para is a community-driven marketplace that makes buying and selling second-hand books simple, affordable, and efficient. By connecting book owners with interested buyers, the platform helps students save money, promotes book reuse, and creates a more accessible learning ecosystem.
+
+## Code of Conduct
+
+See [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).
